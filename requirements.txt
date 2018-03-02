@@ -1,0 +1,4 @@
+Flask >= 0.12.2
+Flask-WTF >= 0.14
+Jinja2 >= 2.9.6
+Werkzeug >= 0.12.2

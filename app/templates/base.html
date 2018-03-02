@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+{% block head %}
+    <title>{% block title %}{% endblock %}</title>
+    {% block styles %}
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+        <link rel="icon" sizes="any" href="{{ url_for('static', filename='img/favicon.ico') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
+    {% endblock %}
+{% endblock %}
+</head>
+
+<body>
+{% block body %}
+    <div class="wrapper">
+        <div class="header">
+        {% block header %}
+            <a href="/" title="SoTu">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" width="50" height="50">
+                <span>SOTU</span>
+            </a>
+        {% endblock %}
+        </div>
+        <div class="content">
+        {% block content %}
+        {% endblock %}
+        </div>
+        <!-- <div class="footer">
+        {% block footer %}
+        {% endblock %}
+        </div> -->
+    </div>
+    {% block scripts %}
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    {% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <script>alert("{{ message|safe }}");</script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+</body>
+
+</html>

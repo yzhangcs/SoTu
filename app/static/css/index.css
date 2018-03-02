@@ -1,0 +1,163 @@
+.content .container {
+    position: absolute;
+    top: 225px;
+    left: 50%;
+    z-index: 8;
+    display: block;
+    margin-left: -350px;
+    width: auto;
+    height: auto;
+    color: black;
+}
+
+.container .forms {
+    position: relative;
+    margin: 36px 10px 12px 10px;
+    height: 54px;
+}
+
+.forms #imgform,
+.forms #urlform {
+    display: inline-block;
+}
+
+#imgform {
+    vertical-align: top;
+}
+#imgform #upload {
+    display: inline-block;
+    width: 84px;
+    height: 54px;
+    background-color: white;
+    text-align: center;
+    line-height: 54px;
+    cursor: pointer;
+}
+#imgform input[type='file'] {
+    display: none;
+}
+
+#urlform input[type='text'] {
+    margin-left: 15px;
+    padding: 4px 40px 4px 10px;
+    width: 468px;
+    height: 42px;
+    outline: none;
+    border: 2px solid white;
+    border-radius: 2px;
+    background-color: transparent;
+    color: white;
+    vertical-align: top;
+}
+#urlform input[type='text'].warn {
+    border: 2px solid red;
+}
+#urlform input[type=text]::-ms-clear {
+    display: none;
+}
+#urlform ::placeholder {
+    color: white;
+    opacity: 1;
+}
+#urlform :-ms-input-placeholder {
+    color: white;
+}
+#urlform ::-ms-input-placeholder {
+    color: white;
+}
+
+#urlform #btnsubmit {
+    margin: 15px 15px 15px -40px;
+    width: 24px;
+    height: 24px;
+    outline: none;
+    border: 0 none;
+    background-color: transparent;
+    background-image: url(../img/search.png);
+    cursor: pointer;
+}
+
+.forms #btnclose {
+    display: inline-block;
+    margin: 18px 0 18px 25px;
+    width: 18px;
+    height: 18px;
+    outline: none;
+    border: 0 none;
+    background-color: transparent;
+    background-image: url(../img/close.png);
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.container .dragtip {
+    margin: 0 auto 10px auto;
+    width: 250px;
+    height: 45px;
+    border-bottom: 3px solid white;
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    line-height: 45px;
+}
+
+.container .dropzone,
+.container .uploadtip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    pointer-events: none;
+}
+
+.dropzone {
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.7);
+}
+.dropzone span {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dropzone .dropfocus {
+    position: absolute;
+    display: block;
+    width: 15px;
+    height: 15px;
+    background: url(../img/dropfocus.gif) no-repeat;
+}
+.dropzone .focus_top_left {
+    top: 16%;
+    left: 36%;
+    background-position: top left;
+}
+.dropzone .focus_bottom_left {
+    bottom: 16%;
+    left: 36%;
+    background-position: bottom left;
+}
+.dropzone .focus_top_right {
+    top: 16%;
+    right: 36%;
+    background-position: top right;
+}
+.dropzone .focus_bottom_right {
+    right: 36%;
+    bottom: 16%;
+    background-position: bottom right;
+}
+
+.uploadtip {
+    z-index: 5;
+    background-color: #f5f5f5;
+    font-size: 16px;
+    line-height: 160px;
+    opacity: 1;
+}
+.uploadtip img {
+    margin-right: 8px;
+    vertical-align: middle;
+}

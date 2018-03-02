@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}SoTu{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="forms">
+            <form id="imgform" method="POST" enctype="multipart/form-data" name="imgform">
+                <label for="fileimg" id="upload">本地上传</label>
+                <input type="file" name="fileimg" id="fileimg">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            </form>
+            <form id="urlform" method="POST" enctype="multipart/form-data" name="urlform">
+                <input type="text" id="txturl" name="txturl" placeholder="在此处粘贴图片网址" autocomplete="off">
+                <input type="button" id="btnsubmit" name="btnsubmit">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            </form>
+            <input type="button" id="btnclose" name="btnclose">
+        </div>
+        <div class="dragtip" id="dragtip">拖放图片到此处试试</div>
+        <div class="dropzone" id="dropzone" style="display:none;">
+            <span>请拖放图片到此处</span>
+            <div class="dropfocus focus_top_left"></div>
+            <div class="dropfocus focus_bottom_left"></div>
+            <div class="dropfocus focus_top_right"></div>
+            <div class="dropfocus focus_bottom_right"></div>
+        </div>
+        <div class="uploadtip" id="uploadtip" style="display:none;">
+            <img src="{{ url_for('static', filename='img/uploading.gif') }}">
+            <span>正在识别中，请稍候...</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
