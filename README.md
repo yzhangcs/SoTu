@@ -37,7 +37,7 @@ $ git clone https://github.com/zy2625/SoTu.git
 * Linux:
 ```sh
 $ cd SoTu
-$ sudo pip install virtualenv
+$ pip install --user virtualenv
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
