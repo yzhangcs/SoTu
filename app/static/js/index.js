@@ -92,8 +92,8 @@ function validate_url(url) {
         }, 2e3);
         return false;
     }
-    else if (url.length > 500) {
-        alert("URL长度不超过500");
+    else if (url.length > 1000) {
+        alert("URL长度不超过1000");
         return false;
     }
     else if (!imgregex.test(url)) {
