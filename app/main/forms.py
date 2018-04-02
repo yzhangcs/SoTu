@@ -7,13 +7,13 @@ from wtforms.validators import DataRequired, Regexp
 class ImgForm(FlaskForm):
     fileimg = FileField(validators=[
         FileRequired(),
-        FileAllowed(['png', 'jpg', 'jpeg'])
+        FileAllowed(['png', 'jpg', 'jpeg', "gif"])
     ])
 
 
 class URLForm(FlaskForm):
     txturl = StringField(validators=[
         DataRequired(),
-        Regexp(r'(?:http\:|https\:)?\/\/.*\.(?:png|jpg|jpeg)$',
+        Regexp(r'(?:http\:|https\:)?\/\/.*\.(?:png|jpg|jpeg|gif)$',
                message='Invalid image url.')
     ])

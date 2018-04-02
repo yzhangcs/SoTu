@@ -83,7 +83,7 @@ function validate_img(file) {
 }
 
 function validate_url(url) {
-    var imgregex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|png)/g;
+    var imgregex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|png|gif)/g;
 
     if (!url) {
         $("#txturl").addClass("warn");
