@@ -1,5 +1,14 @@
-/.vscode
-/app/static/uploads
-/venv
+
+
+# Images
+app/static/uploads
+app/static/datasets
+
+## SQLite databases
+# *.sqlite
+
+# Virtual environment
+venv
+
+.vscode
 __pycache__
-log

@@ -1,81 +1,77 @@
 # sotu
 
-基于`Flask`框架的图像识别系统
+利用`Flask`框架实现的基于内容的图像检索(Content Based Image Retrieval, CBIR)系统
 
 ## 要求
 
-1. `Python`版本
+`python`版本：`3.5.2`
 
-```
-Python 3.5.2
-```
+`pip`版本： `9.0.3`
 
-2. 相关组件要求
-
-```
-Flask >= 0.12.2
-Flask-WTF >= 0.14
-Jinja2 >= 2.9.6
-Werkzeug >= 0.12.2
-```
+相关组件要求见`requirements.txt`
 
 ## 浏览器兼容
 
-由于使用了部分`HTML5`的特性，因此仅支持现代浏览器，IE9及以下的浏览器可能会有显示问题. 此外由于对于`input`元素中`files`属性安全性政策执行的不同，部分浏览器的「`Drag & Drop`」功能会受影响，相关情况见[W3C testing](https://github.com/w3c/web-platform-tests/pull/6617).  
+由于使用了部分`HTML5`的特性，因此仅支持现代浏览器，`IE9`及以下的浏览器可能会有显示问题. 此外由于对于`input`元素中`files`属性安全性政策执行的不同，部分浏览器的「`Drag & Drop`」功能会受影响，相关情况见[W3C testing](https://github.com/w3c/web-platform-tests/pull/6617).  
 页面显示及各项功能在新版本的`Chrome`、`FireFox`及`Edge`上经测试没有问题.
 
 ## 运行
 
-1. Clone
+首先下载仓库并进入相应目录：
 
 ```sh
-$ git clone https://github.com/zy2625/SoTu.git
+$ git clone https://github.com/zy2625/SoTu.git && cd SoTu
 ```
 
-2. Activate
+应用需要在虚拟环境下运行。首先安装`virtualenv`，创建并激活虚拟环境，之后在虚拟环境下安装必要组件。在`Linux`下：
 
-* Linux:
 ```sh
-$ cd SoTu
-$ sudo pip install virtualenv
+$ pip install --user virtualenv
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
-* Windows: 
+在`Windows`下：
+
 ```sh
-$ cd SoTu
 $ pip install virtualenv
 $ virtualenv venv
 $ venv\Scripts\activate
 $ pip install -r requirements.txt
 ```
 
-3. Run
-
-* bash
+在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在`bash`下：
 
 ```sh
 $ export FLASK_APP=sotu.py
-$ flask run -h localhost -p 8080
 ```
 
-* powershell
+在`powershell`下：
 
 ```sh
 $ $env:FLASK_APP="sotu.py"
-$ flask run -h localhost -p 8080
 ```
 
-* cmd
+在`cmd`下：
 
 ```sh
 $ set FLASK_APP=sotu.py
+```
+
+如果要更新或者重新生成数据库，那么需要执行下面的操作：
+
+```sh
+$ flask db upgrade
+```
+
+运行应用执行下面的操作，可以指定主机和端口：
+
+```sh
 $ flask run -h localhost -p 8080
 ```
 
-4. Deactivate
+最后退出虚拟环境：
 
 ```sh
 $ deactivate
@@ -95,3 +91,6 @@ $ deactivate
 [Targeting flex items on the last row](https://stackoverflow.com/questions/42176419/targeting-flex-items-on-the-last-row)  
 [Image inside div has extra space below the image](https://stackoverflow.com/questions/5804256/image-inside-div-has-extra-space-below-the-image)  
 [How TO - Image Overlay Title](https://www.w3schools.com/howto/howto_css_image_overlay_title.asp)  
+[Welcome to Flask-Migrate’s documentation! — Flask-Migrate  documentation](https://flask-migrate.readthedocs.io/en/latest/)  
+[Flask-SQLAlchemy — Flask-SQLAlchemy Documentation (2.3)](http://flask-sqlalchemy.pocoo.org/2.3/)
+

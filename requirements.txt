@@ -1,4 +1,8 @@
-Flask >= 0.12.2
-Flask-WTF >= 0.14
-Jinja2 >= 2.9.6
-Werkzeug >= 0.12.2
+flask >= 0.12.2
+flask-migrate >= 2.1.1
+flask-sqlalchemy >= 2.3.2
+flask-wtf >= 0.14
+jinja2 >= 2.9.6
+numpy >= 1.14.2
+pillow >= 5.1.0
+werkzeug >= 0.12.2
