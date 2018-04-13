@@ -4,12 +4,16 @@ import os
 
 
 class Config:
+    # 路径配置
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    DATASET_DIR = os.path.join(BASE_DIR, 'app/static/datasets')
+    CIFAR10_DIR = os.path.join(DATASET_DIR, 'cifar-10-batches-py')
+    UPLOAD_DIR = os.path.join(DATASET_DIR, 'uploads')
+    # 秘钥配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'it is a secret'
-    UPLOAD_DIR = os.path.join(BASE_DIR, 'app/static/uploads')
+    # 数据库配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI') or \
-        'sqlite:///' + os.path.join(BASE_DIR, 'image.sqlite')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'sotu.db')
 
     @staticmethod
     def init_app(app):
@@ -23,5 +27,5 @@ class DevelopmentConfig(Config):
 
 config = {
     'development': DevelopmentConfig,
-    'default': Config
+    'default': DevelopmentConfig
 }

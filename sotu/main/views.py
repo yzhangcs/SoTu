@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import urllib.request
 
 from flask import current_app, flash, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 
 from . import main
+from ..utils import downloader
 from .forms import ImgForm, URLForm
 
 
@@ -25,9 +25,8 @@ def index():
         url = urlform.txturl.data
         filename = url.split('/')[-1]
         filepath = os.path.join(current_app.config['UPLOAD_DIR'], filename)
-        try:
-            urllib.request.urlretrieve(url, filepath)
-        except Exception as e:
+        downloader.download(url, filepath)
+        if not os.path.exists(filepath):
             flash('无法取回指定URL的图片')
             return redirect(url_for('.index'))
         return redirect(url_for('.result'))
@@ -36,7 +35,7 @@ def index():
 
 @main.route('/result', methods=['GET', 'POST'])
 def result():
-    images = []
-    for img in os.listdir(current_app.config['UPLOAD_DIR'])[:20]:
-        images.append(img)
+    for img in os.listdir(current_app.config['UPLOAD_DIR']):
+        print(current_app.config['UPLOAD_DIR'])
+    images = [img for img in os.listdir(current_app.config['UPLOAD_DIR'])[:20]]
     return render_template('result.html', images=images)

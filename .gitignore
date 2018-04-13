@@ -1,11 +1,10 @@
 
 
 # Images
-app/static/uploads
-app/static/datasets
+sotu/static/datasets
 
-## SQLite databases
-# *.sqlite
+# SQLite databases
+*.db
 
 # Virtual environment
 venv

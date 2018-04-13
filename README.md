@@ -23,7 +23,7 @@
 $ git clone https://github.com/zy2625/SoTu.git && cd SoTu
 ```
 
-应用需要在虚拟环境下运行。首先安装`virtualenv`，创建并激活虚拟环境，之后在虚拟环境下安装必要组件。在`Linux`下：
+应用需要在虚拟环境下运行。首先安装`virtualenv`，创建并激活虚拟环境，在虚拟环境下安装必要组件。在`Linux`下：
 
 ```sh
 $ pip install --user virtualenv
@@ -44,28 +44,28 @@ $ pip install -r requirements.txt
 在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在`bash`下：
 
 ```sh
-$ export FLASK_APP=sotu.py
+$ export FLASK_APP=run.py
 ```
 
 在`powershell`下：
 
 ```sh
-$ $env:FLASK_APP="sotu.py"
+$ $env:FLASK_APP="run.py"
 ```
 
 在`cmd`下：
 
 ```sh
-$ set FLASK_APP=sotu.py
+$ set FLASK_APP=run.py
 ```
 
-如果要更新或者重新生成数据库，那么需要执行下面的操作：
+如果是初次运行，要重新生成数据库，或者是要更新数据库，则执行下面的操作：
 
 ```sh
 $ flask db upgrade
 ```
 
-运行应用执行下面的操作，可以指定主机和端口：
+运行应用时可以指定主机和端口：
 
 ```sh
 $ flask run -h localhost -p 8080
@@ -79,6 +79,7 @@ $ deactivate
 
 ## 相关链接
 [Welcome to Flask](http://flask.pocoo.org/docs/0.12/)  
+[Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
 [关于Flask表单，我所知道的一切](https://zhuanlan.zhihu.com/p/23577026?refer=flask)  
 [Flask-WTF：单个页面两个（多个）表单](https://zhuanlan.zhihu.com/p/23437362)  
 [CSRF Protection](http://flask-wtf.readthedocs.io/en/stable/csrf.html)  
@@ -92,5 +93,5 @@ $ deactivate
 [Image inside div has extra space below the image](https://stackoverflow.com/questions/5804256/image-inside-div-has-extra-space-below-the-image)  
 [How TO - Image Overlay Title](https://www.w3schools.com/howto/howto_css_image_overlay_title.asp)  
 [Welcome to Flask-Migrate’s documentation! — Flask-Migrate  documentation](https://flask-migrate.readthedocs.io/en/latest/)  
-[Flask-SQLAlchemy — Flask-SQLAlchemy Documentation (2.3)](http://flask-sqlalchemy.pocoo.org/2.3/)
+[Flask-SQLAlchemy — Flask-SQLAlchemy Documentation (2.3)](http://flask-sqlalchemy.pocoo.org/2.3/)  
 

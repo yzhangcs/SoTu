@@ -4,6 +4,7 @@ from . import db
 
 
 class Image(db.Model):
+    __tablename__ = 'images'
     uri = db.Column(db.Text, primary_key=True)
     filename = db.Column(db.String, nullable=True)
     # HSV = db.Column(db.Text)
