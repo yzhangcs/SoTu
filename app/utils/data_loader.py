@@ -3,7 +3,7 @@
 import os
 import pickle
 import tarfile
-import urllib.request
+from urllib import request
 
 import numpy
 from flask import current_app
