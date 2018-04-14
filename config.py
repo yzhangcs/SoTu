@@ -6,7 +6,7 @@ import os
 class Config:
     # 路径配置
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    DATASET_DIR = os.path.join(BASE_DIR, 'app/static/datasets')
+    DATASET_DIR = os.path.join(BASE_DIR, 'datasets')
     CIFAR10_DIR = os.path.join(DATASET_DIR, 'cifar-10-batches-py')
     UPLOAD_DIR = os.path.join(DATASET_DIR, 'uploads')
     # 秘钥配置

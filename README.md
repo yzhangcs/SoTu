@@ -44,19 +44,19 @@ $ pip install -r requirements.txt
 在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在`bash`下：
 
 ```sh
-$ export FLASK_APP=run.py
+$ export FLASK_APP=sotu.py
 ```
 
 在`powershell`下：
 
 ```sh
-$ $env:FLASK_APP="run.py"
+$ $env:FLASK_APP="sotu.py"
 ```
 
 在`cmd`下：
 
 ```sh
-$ set FLASK_APP=run.py
+$ set FLASK_APP=sotu.py
 ```
 
 如果是初次运行，要重新生成数据库，或者是要更新数据库，则执行下面的操作：

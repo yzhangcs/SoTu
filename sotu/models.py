@@ -6,7 +6,7 @@ from . import db
 class Image(db.Model):
     __tablename__ = 'images'
     uri = db.Column(db.Text, primary_key=True)
-    filename = db.Column(db.String, nullable=True)
+    filename = db.Column(db.String)
     # HSV = db.Column(db.Text)
     # SIFT = db.Column(db.Text)
 

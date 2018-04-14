@@ -1,7 +1,7 @@
 
 
-# Images
-sotu/static/datasets
+# Datasets
+datasets
 
 # SQLite databases
 *.db
