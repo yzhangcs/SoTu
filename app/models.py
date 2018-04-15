@@ -2,8 +2,8 @@
 
 from flask import current_app
 
-from . import db
-from .utils import cifar10
+from app import db
+from app.vision.datasets import get_caltech101
 
 
 class Image(db.Model):
@@ -12,11 +12,11 @@ class Image(db.Model):
     uri = db.Column(db.Text, unique=True)
 
     def __init__(self, **kwargs):
-        super(Role, self).__init__(**kwargs)
+        super(Image, self).__init__(**kwargs)
 
     @staticmethod
-    def insert_cifar10():
-        images = cifar10.get_training_images()
+    def insert_caltech101():
+        images = get_caltech101(current_app.config['IMAGE_DIR'])
         for uri in images:
             img = Image.query.filter_by(uri=uri).first()
             if img is None:
@@ -24,4 +24,4 @@ class Image(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return '<Image %r>' % self.filename
+        return '<Image %r>' % self.uri
