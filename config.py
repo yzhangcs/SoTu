@@ -6,9 +6,8 @@ import os
 class Config:
     # 路径配置
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    DATASET_DIR = os.path.join(BASE_DIR, 'datasets')
-    CIFAR10_DIR = os.path.join(DATASET_DIR, 'cifar-10-batches-py')
-    UPLOAD_DIR = os.path.join(DATASET_DIR, 'uploads')
+    IMAGE_DIR = os.path.join(BASE_DIR, 'app/images')
+    UPLOAD_DIR = os.path.join(IMAGE_DIR, 'uploads')
     # 秘钥配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'it is a secret'
     # 数据库配置

@@ -1,13 +1,5 @@
-
-
-# Datasets
-datasets
-
-# SQLite databases
-*.db
-
-# Virtual environment
+app/images
 venv
-
+*.db
 .vscode
 __pycache__
