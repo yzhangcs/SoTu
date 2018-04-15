@@ -9,7 +9,7 @@ from wtforms.validators import DataRequired, Regexp
 class ImgForm(FlaskForm):
     fileimg = FileField(validators=[
         FileRequired(),
-        FileAllowed(['png', 'jpg', 'jpeg', "gif"])
+        FileAllowed(['png', 'jpg', 'jpeg', 'gif'])
     ])
 
 

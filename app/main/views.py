@@ -5,8 +5,9 @@ import os
 from flask import current_app, flash, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 
+from app.utils import download
+
 from . import main
-from ..utils import downloader
 from .forms import ImgForm, URLForm
 
 
@@ -25,7 +26,7 @@ def index():
         url = urlform.txturl.data
         filename = url.split('/')[-1]
         filepath = os.path.join(current_app.config['UPLOAD_DIR'], filename)
-        downloader.download(url, filepath)
+        download(url, filepath)
         if not os.path.exists(filepath):
             flash('无法取回指定URL的图片')
             return redirect(url_for('.index'))
