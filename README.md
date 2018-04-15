@@ -15,15 +15,19 @@
 由于使用了部分`HTML5`的特性，因此仅支持现代浏览器，`IE9`及以下的浏览器可能会有显示问题. 此外由于对于`input`元素中`files`属性安全性政策执行的不同，部分浏览器的「`Drag & Drop`」功能会受影响，相关情况见[W3C testing](https://github.com/w3c/web-platform-tests/pull/6617).  
 页面显示及各项功能在新版本的`Chrome`、`FireFox`及`Edge`上经测试没有问题.
 
-## 运行
+## 初始化
 
-首先下载仓库并进入相应目录：
+下载仓库并进入相应目录：
 
 ```sh
 $ git clone https://github.com/zy2625/SoTu.git && cd SoTu
 ```
 
-应用需要在虚拟环境下运行。首先安装`virtualenv`，创建并激活虚拟环境，在虚拟环境下安装必要组件。在`Linux`下：
+### 虚拟环境
+
+安装`virtualenv`，创建并激活虚拟环境，在虚拟环境下安装必要组件。
+
+在`Linux`下：
 
 ```sh
 $ pip install --user virtualenv
@@ -41,7 +45,9 @@ $ venv\Scripts\activate
 $ pip install -r requirements.txt
 ```
 
-在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在`bash`下：
+在运行应用之前，首先需要设置环境变量`FLASK_APP`的值。
+
+在`bash`下：
 
 ```sh
 $ export FLASK_APP=sotu.py
@@ -59,11 +65,23 @@ $ $env:FLASK_APP="sotu.py"
 $ set FLASK_APP=sotu.py
 ```
 
+### 数据库
+
+```sh
+$ flask db init
+```
+
+```sh
+$ flask db migrate
+```
+
 如果是初次运行，要重新生成数据库，或者是要更新数据库，则执行下面的操作：
 
 ```sh
 $ flask db upgrade
 ```
+
+## 运行
 
 运行应用时可以指定主机和端口：
 

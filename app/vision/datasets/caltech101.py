@@ -10,5 +10,5 @@ def get_caltech101(root):
     filepath = os.path.join(root, '101_ObjectCategories.tar.gz')
     caltech101_path = os.path.join(root, '101_ObjectCategories')
     if not os.path.exists(caltech101_path):
-        download(url, filepath, True)
+        download(url, filepath, untar=True)
     return list_files(caltech101_path, ('png', 'jpg', 'jpeg', 'gif'))
