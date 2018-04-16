@@ -20,7 +20,8 @@
 下载仓库并进入相应目录：
 
 ```sh
-$ git clone https://github.com/zy2625/SoTu.git && cd SoTu
+$ git clone https://github.com/zy2625/SoTu.git
+$ cd SoTu
 ```
 
 ### 虚拟环境
@@ -65,9 +66,7 @@ $ $env:FLASK_APP="sotu.py"
 
 ### 数据库
 
-这里用[Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)管理数据库，用[Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)来维护数据库迁移。
-
-初次运行需要重新生成数据库：
+这里用[Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)管理数据库，用[Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)来维护数据库迁移，初次运行需要重新生成数据库：
 
 ```sh
 $ flask db upgrade
@@ -97,7 +96,7 @@ $ deactivate
 ```
 
 ## 相关链接
-Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
+[Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
 [关于Flask表单，我所知道的一切](https://zhuanlan.zhihu.com/p/23577026?refer=flask)  
 [Flask-WTF：单个页面两个（多个）表单](https://zhuanlan.zhihu.com/p/23437362)  
 [CSRF Protection](http://flask-wtf.readthedocs.io/en/stable/csrf.html)  
