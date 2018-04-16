@@ -1,6 +1,6 @@
 # sotu
 
-利用`Flask`框架实现的基于内容的图像检索(Content Based Image Retrieval, CBIR)系统
+利用[Flask](http://flask.pocoo.org/docs/0.12/)框架实现的基于内容的图像检索(Content Based Image Retrieval, CBIR)系统
 
 ## 要求
 
@@ -12,8 +12,8 @@
 
 ## 浏览器兼容
 
-由于使用了部分`HTML5`的特性，因此仅支持现代浏览器，`IE9`及以下的浏览器可能会有显示问题. 此外由于对于`input`元素中`files`属性安全性政策执行的不同，部分浏览器的「`Drag & Drop`」功能会受影响，相关情况见[W3C testing](https://github.com/w3c/web-platform-tests/pull/6617).  
-页面显示及各项功能在新版本的`Chrome`、`FireFox`及`Edge`上经测试没有问题.
+由于使用了部分HTML5的特性，因此仅支持现代浏览器，IE9及以下的浏览器可能会有显示问题. 此外由于对于input元素中files属性安全性政策执行的不同，部分浏览器的「Drag & Drop」功能会受影响，相关情况见[W3C testing](https://github.com/w3c/web-platform-tests/pull/6617).  
+页面显示及各项功能在新版本的Chrome、FireFox及Edge上经测试没有问题.
 
 ## 初始化
 
@@ -25,60 +25,61 @@ $ git clone https://github.com/zy2625/SoTu.git && cd SoTu
 
 ### 虚拟环境
 
-安装`virtualenv`，创建并激活虚拟环境，在虚拟环境下安装必要组件。
+首先需要安装`virtualenv`，创建并激活虚拟环境。
 
-在`Linux`下：
+在Linux下：
 
 ```sh
 $ pip install --user virtualenv
 $ virtualenv venv
 $ . venv/bin/activate
-$ pip install -r requirements.txt
 ```
 
-在`Windows`下：
+在Windows下：
 
 ```sh
 $ pip install virtualenv
 $ virtualenv venv
 $ venv\Scripts\activate
+```
+
+接着在虚拟环境下安装必要组件：
+
+```sh
 $ pip install -r requirements.txt
 ```
 
-在运行应用之前，首先需要设置环境变量`FLASK_APP`的值。
-
-在`bash`下：
+在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在bash下：
 
 ```sh
 $ export FLASK_APP=sotu.py
 ```
 
-在`powershell`下：
+在cmd下，上面的命令用`set`代替`export`。
+
+在powershell下：
 
 ```sh
 $ $env:FLASK_APP="sotu.py"
 ```
 
-在`cmd`下：
-
-```sh
-$ set FLASK_APP=sotu.py
-```
-
 ### 数据库
 
-```sh
-$ flask db init
-```
+这里用[Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)管理数据库，用[Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)来维护数据库迁移。
 
-```sh
-$ flask db migrate
-```
-
-如果是初次运行，要重新生成数据库，或者是要更新数据库，则执行下面的操作：
+初次运行需要重新生成数据库：
 
 ```sh
 $ flask db upgrade
+```
+
+数据库中插入[Caltech101](http://www.vision.caltech.edu/Image_Datasets/Caltech101/)作为初始的数据集，可以用`flask shell`命令进入shell会话并执行下面的操作：
+
+```sh
+>>> Image.insert_caltech101()
+>>> len(Image.query.all())
+9144
+>>> exit()
 ```
 
 ## 运行
@@ -96,8 +97,7 @@ $ deactivate
 ```
 
 ## 相关链接
-[Welcome to Flask](http://flask.pocoo.org/docs/0.12/)  
-[Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
+Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
 [关于Flask表单，我所知道的一切](https://zhuanlan.zhihu.com/p/23577026?refer=flask)  
 [Flask-WTF：单个页面两个（多个）表单](https://zhuanlan.zhihu.com/p/23437362)  
 [CSRF Protection](http://flask-wtf.readthedocs.io/en/stable/csrf.html)  
@@ -110,6 +110,5 @@ $ deactivate
 [Targeting flex items on the last row](https://stackoverflow.com/questions/42176419/targeting-flex-items-on-the-last-row)  
 [Image inside div has extra space below the image](https://stackoverflow.com/questions/5804256/image-inside-div-has-extra-space-below-the-image)  
 [How TO - Image Overlay Title](https://www.w3schools.com/howto/howto_css_image_overlay_title.asp)  
-[Welcome to Flask-Migrate’s documentation! — Flask-Migrate  documentation](https://flask-migrate.readthedocs.io/en/latest/)  
-[Flask-SQLAlchemy — Flask-SQLAlchemy Documentation (2.3)](http://flask-sqlalchemy.pocoo.org/2.3/)  
+
 

@@ -10,7 +10,7 @@ def download(url, path, untar=False):
     if os.path.exists(path):
         print('Data already downloaded')
     else:
-        print('Downloading data from ', url)
+        print('Downloading data from %s' % url)
         err_msg = 'URL fetch failure on {}: {} -- {}'
         try:
             try:
