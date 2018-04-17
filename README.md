@@ -76,7 +76,7 @@ $ flask db upgrade
 
 ```sh
 >>> Image.insert_caltech101()
->>> len(Image.query.all())
+>>> Image.query.count()
 9144
 >>> exit()
 ```

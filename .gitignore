@@ -1,4 +1,4 @@
-app/images
+images
 venv
 *.db
 .vscode

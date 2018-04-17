@@ -11,7 +11,7 @@
     <div class="image-wrapper">
     {% if images %}
         <div class="image-result">
-            <img id="imgbest" src="{{ url_for('static', filename='uploads/') }}{{ images[0] }}">
+            <img id="imgbest" src="{{ url_for('main.download_file', filename=images[0]) }}">
             <div class="image-info">
                 <div id="image-similarity"></div>
                 <div id="image-size"></div>
@@ -23,7 +23,7 @@
         <div class="image-grid">
         {% for image in images %}
             <div class="image-item">
-                <img src="{{ url_for('static', filename='uploads/') }}{{ image }}">
+                <img src="{{ url_for('main.download_file', filename=image) }}">
                 <div class="image-overlay"></div>
             </div>
         {% endfor %}

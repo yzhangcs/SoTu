@@ -7,8 +7,13 @@ from app.utils import download, list_files
 
 def get_caltech101(root):
     url = 'http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz'
-    filepath = os.path.join(root, '101_ObjectCategories.tar.gz')
-    caltech101_path = os.path.join(root, '101_ObjectCategories')
-    if not os.path.exists(caltech101_path):
-        download(url, filepath, untar=True)
-    return list_files(caltech101_path, ('png', 'jpg', 'jpeg', 'gif'))
+    filename = '101_ObjectCategories.tar.gz'
+    caltech101_dir = '101_ObjectCategories'
+
+    cwd = os.getcwd()
+    os.chdir(root)
+    if not os.path.exists(caltech101_dir):
+        download(url, root, filename, untar=True)
+    images = list_files(caltech101_dir, ('png', 'jpg', 'jpeg', 'gif'))
+    os.chdir(cwd)
+    return images
