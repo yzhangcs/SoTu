@@ -58,7 +58,11 @@ def download_file(filename):
 
 
 def insert_to_db(uri):
-    if not os.path.exists(uri):
-        return
     db.session.add(Image(uri=uri))
     db.session.commit()
+
+
+# def delete_from_db(uri):
+#     db.session.delete(Image.query.filter_by(uri=uri).all())
+#     print(Image.query.count())
+#     db.session.commit()

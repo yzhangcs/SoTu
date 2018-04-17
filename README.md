@@ -26,7 +26,7 @@ $ cd SoTu
 
 ### 虚拟环境
 
-首先需要安装`virtualenv`，创建并激活虚拟环境。
+首先安装`virtualenv`，创建并激活虚拟环境. 
 
 在Linux下：
 
@@ -44,19 +44,19 @@ $ virtualenv venv
 $ venv\Scripts\activate
 ```
 
-接着在虚拟环境下安装必要组件：
+在虚拟环境下安装必要组件：
 
 ```sh
 $ pip install -r requirements.txt
 ```
 
-在运行应用之前，首先需要设置环境变量`FLASK_APP`的值，在bash下：
+在运行应用之前，需要设置环境变量`FLASK_APP`的值，在bash下：
 
 ```sh
 $ export FLASK_APP=sotu.py
 ```
 
-在cmd下，上面的命令用`set`代替`export`。
+如果是cmd，用`set`代替上面的`export`. 
 
 在powershell下：
 
