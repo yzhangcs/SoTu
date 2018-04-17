@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import posixpath
 
 from flask import (current_app, flash, redirect, render_template,
                    send_from_directory, url_for)
@@ -18,36 +19,36 @@ from .forms import ImgForm, URLForm
 def index():
     imgform = ImgForm()
     urlform = URLForm()
+    cwd = os.getcwd()
+    os.chdir(current_app.config['IMAGE_DIR'])
     upload_dir = 'uploads'
+
     if imgform.validate_on_submit():
         file = imgform.fileimg.data
         filename = secure_filename(file.filename)
-        filepath = os.path.join(
-            current_app.config['IMAGE_DIR'], upload_dir, filename)
+        filepath = posixpath.join(upload_dir, filename)
         if not os.path.exists(filepath):
             file.save(filepath)
-        insert_to_db(os.path.join(upload_dir, filename))
+        insert_to_db(posixpath.join(upload_dir, filename))
         return redirect(url_for('.result'))
     elif urlform.validate_on_submit():
         url = urlform.txturl.data
         filename = secure_filename(url.split('/')[-1])
-        filepath = os.path.join(
-            current_app.config['IMAGE_DIR'], upload_dir, filename)
-        download(url,
-                 os.path.join(current_app.config['IMAGE_DIR'], upload_dir),
-                 filename)
+        filepath = posixpath.join(upload_dir, filename)
+        download(url, upload_dir, filename)
         if not os.path.exists(filepath):
             flash('无法取回指定URL的图片')
             return redirect(url_for('.index'))
         else:
-            insert_to_db(os.path.join(upload_dir, filename))
+            insert_to_db(posixpath.join(upload_dir, filename))
             return redirect(url_for('.result'))
+    os.chdir(cwd)
     return render_template('index.html')
 
 
 @main.route('/result', methods=['GET', 'POST'])
 def result():
-    images = [img.uri for img in Image.query.limit(30)]
+    images = [img.uri for img in Image.query.limit(5)]
     return render_template('result.html', images=images)
 
 
@@ -58,11 +59,6 @@ def download_file(filename):
 
 
 def insert_to_db(uri):
-    db.session.add(Image(uri=uri))
+    if Image.query.filter_by(uri=uri).first() is None:
+        db.session.add(Image(uri=uri))
     db.session.commit()
-
-
-# def delete_from_db(uri):
-#     db.session.delete(Image.query.filter_by(uri=uri).all())
-#     print(Image.query.count())
-#     db.session.commit()
