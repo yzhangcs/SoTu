@@ -1,17 +1,17 @@
-$(document).ready(function() {
-    $("#fileimg").change(function(e) {
+$(document).ready(function () {
+    $("#fileimg").change(function (e) {
         var file = $(this)[0].files[0];
         if (validate_img(file))
             submit($("#imgform"));
     });
 
-    $("#btnsubmit").click(function() {
+    $("#btnsubmit").click(function () {
         var url = $("#txturl").val();
         if (validate_url(url))
             submit($("#urlform"));
     });
 
-    $(document).keypress(function(e) {
+    $(document).keypress(function (e) {
         var key = e.which;
         // 回车事件触发提交按钮
         if (key == 13) {
@@ -21,15 +21,15 @@ $(document).ready(function() {
     });
 
     $(".container").on({
-        dragenter: function(e) {
+        dragenter: function (e) {
             e.stopPropagation();
             e.preventDefault();
         },
-        dragover: function(e) {
+        dragover: function (e) {
             e.stopPropagation();
             e.preventDefault();
         },
-        drop: function(e) {
+        drop: function (e) {
             e.stopPropagation();
             e.preventDefault();
             $("#dropzone").hide();
@@ -39,16 +39,16 @@ $(document).ready(function() {
         }
     });
     $(document).on({
-        dragenter: function(e) {
+        dragenter: function (e) {
             e.stopPropagation();
             e.preventDefault();
             $("#dropzone").show();
         },
-        dragover: function(e) {
+        dragover: function (e) {
             e.stopPropagation();
             e.preventDefault();
         },
-        dragleave: function(e) {
+        dragleave: function (e) {
             e.stopPropagation();
             e.preventDefault();
             if (e.clientX <= 0 ||
@@ -57,14 +57,14 @@ $(document).ready(function() {
                 e.clientY >= $(window).height())
                 $("#dropzone").hide();
         },
-        drop: function(e) {
+        drop: function (e) {
             e.stopPropagation();
             e.preventDefault();
             $("#dropzone").hide();
         }
     });
 
-    $("#btnclose").click(function() {
+    $("#btnclose").click(function () {
         $("#txturl").val("");
     });
 });
@@ -83,17 +83,17 @@ function validate_img(file) {
 }
 
 function validate_url(url) {
-    var imgregex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|png)/g;
+    var imgregex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|png|gif)/g;
 
     if (!url) {
         $("#txturl").addClass("warn");
-        setTimeout(function() {
+        setTimeout(function () {
             $("#txturl").removeClass("warn");
         }, 2e3);
         return false;
     }
-    else if (url.length > 500) {
-        alert("URL长度不超过500");
+    else if (url.length > 1000) {
+        alert("URL长度不超过1000");
         return false;
     }
     else if (!imgregex.test(url)) {
@@ -108,7 +108,7 @@ function submit(form) {
     try {
         form.submit();
     }
-    catch(err) {
+    catch (err) {
         alert(err);
         $("#uploadtip").hide();
     }
