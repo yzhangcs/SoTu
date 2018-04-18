@@ -1,5 +1,5 @@
-/.vscode
-/app/static/uploads
-/venv
+images
+venv
+*.db
+.vscode
 __pycache__
-log
