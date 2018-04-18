@@ -6,7 +6,7 @@ import os
 class Config:
     # 路径配置
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    IMAGE_DIR = os.path.join(BASE_DIR, 'images')
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
     # 秘钥配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'it is a secret'
     # 数据库配置

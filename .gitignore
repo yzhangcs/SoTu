@@ -1,5 +1,5 @@
-images
-venv
 *.db
-.vscode
-__pycache__
+venv/
+data/
+.vscode/
+__pycache__/

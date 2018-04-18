@@ -16,7 +16,7 @@ class Image(db.Model):
 
     @staticmethod
     def insert_caltech101():
-        images = get_caltech101(current_app.config['IMAGE_DIR'])
+        images = get_caltech101(current_app.config['DATA_DIR'])
         for uri in images:
             img = Image.query.filter_by(uri=uri).first()
             if img is None:

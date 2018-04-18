@@ -20,7 +20,7 @@ def index():
     imgform = ImgForm()
     urlform = URLForm()
     cwd = os.getcwd()
-    os.chdir(current_app.config['IMAGE_DIR'])
+    os.chdir(current_app.config['DATA_DIR'])
     upload_dir = 'uploads'
 
     if imgform.validate_on_submit():
@@ -54,7 +54,7 @@ def result():
 
 @main.route('/images/<path:filename>')
 def download_file(filename):
-    return send_from_directory(current_app.config['IMAGE_DIR'],
+    return send_from_directory(current_app.config['DATA_DIR'],
                                filename, as_attachment=True)
 
 
