@@ -1,8 +1,8 @@
 flask >= 0.12.2
-flask-migrate >= 2.1.1
-flask-sqlalchemy >= 2.3.2
 flask-wtf >= 0.14
 jinja2 >= 2.9.6
+matplotlib >= 2.2.2
 numpy >= 1.14.2
+opencv-contrib-python >= 3.4.0.12
 pillow >= 5.1.0
 werkzeug >= 0.12.2

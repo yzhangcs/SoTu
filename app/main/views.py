@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 from app import db
 from app.models import Image
-from app.utils import download
+from utils import download
 
 from . import main
 from .forms import ImgForm, URLForm

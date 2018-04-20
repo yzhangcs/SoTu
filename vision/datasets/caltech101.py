@@ -2,7 +2,7 @@
 
 import os
 import PIL
-from app.utils import download, list_files
+from utils import download, list_files
 
 
 def get_caltech101(root):
@@ -14,6 +14,6 @@ def get_caltech101(root):
     os.chdir(root)
     if not os.path.exists(caltech101_dir):
         download(url, root, filename, untar=True)
-    images = list_files(caltech101_dir, ('png', 'jpg', 'jpeg', 'gif'))
+    uris = list_files(caltech101_dir, ('png', 'jpg', 'jpeg', 'gif'))
     os.chdir(cwd)
-    return images
+    return uris
