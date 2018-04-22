@@ -3,13 +3,12 @@
 import os
 import posixpath
 
-from flask import (current_app, flash, redirect, render_template,
+from flask import (current_app, flash, redirect, render_template, request,
                    send_from_directory, url_for)
 from werkzeug.utils import secure_filename
 
-from app import db
-from app.models import Image
-from utils import download
+from app.utils import download
+from app.vision.features import bof
 
 from . import main
 from .forms import ImgForm, URLForm
@@ -26,39 +25,32 @@ def index():
     if imgform.validate_on_submit():
         file = imgform.fileimg.data
         filename = secure_filename(file.filename)
-        filepath = posixpath.join(upload_dir, filename)
-        if not os.path.exists(filepath):
-            file.save(filepath)
-        insert_to_db(posixpath.join(upload_dir, filename))
-        return redirect(url_for('.result'))
+        uri = posixpath.join(upload_dir, filename)
+        if not os.path.exists(uri):
+            file.save(uri)
+        return redirect(url_for('.result', uri=uri))
     elif urlform.validate_on_submit():
         url = urlform.txturl.data
         filename = secure_filename(url.split('/')[-1])
-        filepath = posixpath.join(upload_dir, filename)
+        uri = posixpath.join(upload_dir, filename)
         download(url, upload_dir, filename)
-        if not os.path.exists(filepath):
+        if not os.path.exists(uri):
             flash('无法取回指定URL的图片')
             return redirect(url_for('.index'))
         else:
-            insert_to_db(posixpath.join(upload_dir, filename))
-            return redirect(url_for('.result'))
+            return redirect(url_for('.result', uri=uri))
     os.chdir(cwd)
     return render_template('index.html')
 
 
-@main.route('/result', methods=['GET', 'POST'])
+@main.route('/result', methods=['GET'])
 def result():
-    images = [img.uri for img in Image.query.limit(5)]
-    return render_template('result.html', images=images)
+    uri = request.args.get('uri')
+    images = bof.match(uri, top_k=30)
+    return render_template('result.html', uri=uri, images=images)
 
 
-@main.route('/images/<path:filename>')
-def download_file(filename):
+@main.route('/images/<path:uri>')
+def download_file(uri):
     return send_from_directory(current_app.config['DATA_DIR'],
-                               filename, as_attachment=True)
-
-
-def insert_to_db(uri):
-    if Image.query.filter_by(uri=uri).first() is None:
-        db.session.add(Image(uri=uri))
-    db.session.commit()
+                               uri, as_attachment=True)

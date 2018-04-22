@@ -64,23 +64,6 @@ $ export FLASK_APP=sotu.py
 $ $env:FLASK_APP="sotu.py"
 ```
 
-### 数据库
-
-这里用[Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)管理数据库，用[Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)来维护数据库迁移，初次运行需要重新生成数据库：
-
-```sh
-$ flask db upgrade
-```
-
-数据库中插入[Caltech101](http://www.vision.caltech.edu/Image_Datasets/Caltech101/)作为初始的数据集，可以用`flask shell`命令进入shell会话并执行下面的操作：
-
-```sh
->>> Image.insert_caltech101()
->>> Image.query.count()
-9144
->>> exit()
-```
-
 ## 运行
 
 运行应用时可以指定主机和端口：
@@ -99,7 +82,6 @@ $ deactivate
 [Explore Flask — Explore Flask 1.0 documentation](http://exploreflask.com/en/latest/index.html)  
 [关于Flask表单，我所知道的一切](https://zhuanlan.zhihu.com/p/23577026?refer=flask)  
 [Flask-WTF：单个页面两个（多个）表单](https://zhuanlan.zhihu.com/p/23437362)  
-[CSRF Protection](http://flask-wtf.readthedocs.io/en/stable/csrf.html)  
 [Flask: show flash messages in alertbox](https://stackoverflow.com/questions/33580143/flask-show-flash-messages-in-alertbox)  
 [How to make this Header/Content/Footer layout using CSS?](https://stackoverflow.com/questions/7123138/how-to-make-this-header-content-footer-layout-using-css)  
 [Drag and Drop File Upload jQuery Example](http://hayageek.com/drag-and-drop-file-upload-jquery/)  
@@ -109,4 +91,3 @@ $ deactivate
 [Targeting flex items on the last row](https://stackoverflow.com/questions/42176419/targeting-flex-items-on-the-last-row)  
 [Image inside div has extra space below the image](https://stackoverflow.com/questions/5804256/image-inside-div-has-extra-space-below-the-image)  
 [How TO - Image Overlay Title](https://www.w3schools.com/howto/howto_css_image_overlay_title.asp)  
-[Creating seed data in a flask-migrate or alembic migration](https://stackoverflow.com/questions/19334604/creating-seed-data-in-a-flask-migrate-or-alembic-migration)
