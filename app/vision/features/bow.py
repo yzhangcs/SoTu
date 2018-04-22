@@ -11,20 +11,28 @@ from sklearn.preprocessing import normalize
 
 
 def get_sift(images):
-    sift = cv2.xfeatures2d.SIFT_create()
-    kp_all, des_all = zip(
-        *[sift.detectAndCompute(img, None)for img in images]
-    )
+    sift_path = os.path.join(current_app.config['FEATURE_DIR'], 'sift.pkl')
+    if os.path.exists(sift_path):
+        with open(sift_path, 'rb') as s:
+            kp_all, des_all = pickle.load(s)
+    else:
+        sift = cv2.xfeatures2d.SIFT_create()
+        kp_all, des_all = zip(
+            *[sift.detectAndCompute(img, None) for img in images]
+        )
+        with open(sift_path, 'wb') as s:
+            pickle.dump((kp_all, des_all), s)
     return kp_all, des_all
 
 
 def get_centroids(obs, k, iter=1):
-    if os.path.exists('centroids.pkl'):
-        with open('centroids.pkl', 'rb') as cen:
+    cen_path = os.path.join(current_app.config['FEATURE_DIR'], 'cen.pkl')
+    if os.path.exists(cen_path):
+        with open(cen_path, 'rb') as cen:
             centroids = pickle.load(cen)
     else:
         centroids = kmeans(obs, k, iter)[0]
-        with open('centroids.pkl', 'wb') as cen:
+        with open(cen_path, 'wb') as cen:
             pickle.dump(centroids, cen)
     return centroids
 
@@ -56,14 +64,16 @@ def extract(uris):
     # 计算聚类频率矩阵的tf-idf(L2归一化)
     features = normalize(tf * idf)
 
-    with open(current_app.config['BOF_PKL'], 'wb') as bof:
-        pickle.dump((uris, features, idf, centroids), bof)
+    bow_path = os.path.join(current_app.config['FEATURE_DIR'], 'bow.pkl')
+    with open(bow_path, 'wb') as bow:
+        pickle.dump((uris, features, idf, centroids), bow)
 
 
 def match(uri, top_k=20):
-    bof = open(current_app.config['BOF_PKL'], 'rb')
+    bow_path = os.path.join(current_app.config['FEATURE_DIR'], 'bow.pkl')
+    bow = open(bow_path, 'rb')
     # 读取所有图片的uri及对应feature，并读取其和所有的聚类中心
-    uris, features, idf, centroids = pickle.load(bof)
+    uris, features, idf, centroids = pickle.load(bow)
     k = len(centroids)
     img = cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
     # 计算要搜索的图像的descriptor
