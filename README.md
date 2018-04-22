@@ -44,7 +44,7 @@ $ virtualenv venv
 $ venv\Scripts\activate
 ```
 
-在虚拟环境下安装必要组件：
+之后在虚拟环境下安装必要组件：
 
 ```sh
 $ pip install -r requirements.txt
@@ -62,6 +62,14 @@ $ export FLASK_APP=sotu.py
 
 ```sh
 $ $env:FLASK_APP="sotu.py"
+```
+
+### 图像特征提取
+
+利用`SIFT+BoW`模型提取[caltech101](http://www.vision.caltech.edu/Image_Datasets/Caltech101)数据集的图像特征：
+
+```sh
+$ flask extract
 ```
 
 ## 运行
