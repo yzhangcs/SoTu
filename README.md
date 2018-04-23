@@ -66,7 +66,7 @@ $ $env:FLASK_APP="sotu.py"
 
 ### 图像特征提取
 
-利用`SIFT+BoW`模型提取[caltech101](http://www.vision.caltech.edu/Image_Datasets/Caltech101)数据集的图像特征：
+利用`SIFT+BoF`模型提取[caltech101](http://www.vision.caltech.edu/Image_Datasets/Caltech101)数据集的图像特征：
 
 ```sh
 $ flask extract
