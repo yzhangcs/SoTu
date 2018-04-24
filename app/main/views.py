@@ -8,7 +8,7 @@ from flask import (current_app, flash, redirect, render_template, request,
 from werkzeug.utils import secure_filename
 
 from app.utils import download
-from app.vision.features import bow
+from app.vision import bof
 
 from . import main
 from .forms import ImgForm, URLForm
@@ -46,7 +46,7 @@ def index():
 @main.route('/result', methods=['GET'])
 def result():
     uri = request.args.get('uri')
-    images = bow.match(uri, top_k=30)
+    images = bof.match(uri, top_k=20)
     return render_template('result.html', uri=uri, images=images)
 
 
