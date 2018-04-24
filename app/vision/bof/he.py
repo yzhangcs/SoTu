@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.spatial.distance import hamming
 
 
 def get_proj_matrix(db, d):
@@ -26,13 +25,19 @@ def get_binary(prj, lbl, medians):
     return [p > medians[i] for p, i in zip(prj, lbl)]
 
 
+def ham_dist(vec_a, vec_b):
+    return sum(np.logical_xor(vec_a, vec_b))
+
+
 def get_score(bin_test, bin_train, threshold, lbl_test, lbl_train, idf):
-    score = 0
-    num_test = len(bin_test)
-    num_train = len(bin_train)
+    num_test = len(lbl_test)
+    num_train = len(lbl_train)
+    score = np.zeros([num_test, num_train])
+
     for i in range(num_test):
         for j in range(num_train):
-            if (hamming(bin_test[i], bin_train[j]) < threshold):
-                score += (lbl_test[i] == lbl_train[j]) * idf[lbl_test[i]]
-    score /= (num_test * num_train)
-    return score
+            if lbl_test[i] == lbl_train[j]:
+                if ham_dist(bin_test[i], bin_train[j]) < threshold:
+                    score[i][j] = 1
+    weighted = sum([idf[l] * sum(s) for l, s in zip(lbl_test, score)])
+    return weighted / (num_test * num_train)

@@ -4,6 +4,9 @@ import cv2
 from flask import current_app
 
 
-def extract(image):
+def extract(images):
     sift = cv2.xfeatures2d.SIFT_create()
-    return sift.detectAndCompute(image, None)
+    keypoints, descriptors = zip(
+        *[sift.detectAndCompute(img, None) for img in images]
+    )
+    return keypoints, descriptors

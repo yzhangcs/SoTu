@@ -18,7 +18,7 @@ def extract(uris):
     images = [cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
               for uri in uris]
     # 获取每幅图的所有keypoint和对应的descriptor
-    keypoints, descriptors = zip(*[sift.extract(img) for img in images])
+    keypoints, descriptors = sift.extract(images)
     # 垂直堆叠所有的descriptor，每个128维
     des_all = np.vstack(descriptors)
 
@@ -59,7 +59,7 @@ def match(uri, top_k=20):
     k = len(centroids)
     img = cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
     # 计算要搜索的图像的所有descriptor
-    des = sift.extract(img)[1]
+    des = sift.extract([img])[1][0]
     # 根据投影矩阵对要搜索的图像的所有descriptor降维
     prj = np.dot(des, P.T)
     # 映射要搜索的图像的所有descriptor到距其最近的聚类并得到该聚类的索引
@@ -69,6 +69,7 @@ def match(uri, top_k=20):
 
     # 定义Hamming阈值
     threshold = 25
+    print("Start to score all iamges")
     scores = np.array([he.get_score(binary, b, threshold, lbl, i, idf)
                        for b, i in zip(binaries, labels)])
     rank = np.argsort(-scores)[: top_k]
