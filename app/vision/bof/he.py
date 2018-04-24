@@ -9,16 +9,16 @@ def get_proj_matrix(db, d):
     M = np.random.randn(d, d)
     # QR分解得到正交矩阵Q
     Q, R = np.linalg.qr(M)
-    return Q[:d_b, :]
+    return Q[:db, :]
 
 
-def get_medians(projections, labels, k):
-    sum = np.zeros(k, projections.shape[1])
-    freq = [0] * k
-    for proj, lbl in zip(projections, labels):
-        sum[lbl][0] += proj
-        freq[lbl] += 1
-    medians = [s / freq[i] for i, s in enumerate(sum)]
+def get_medians(prj_all, lbl_all, k):
+    sums = np.zeros([k, prj_all.shape[1]])
+    freqs = [0] * k
+    for prj, lbl in zip(prj_all, lbl_all):
+        sums[lbl] += prj
+        freqs[lbl] += 1
+    medians = [s / f for s, f in zip(sums, freqs)]
     return medians
 
 
@@ -26,12 +26,13 @@ def get_binary(prj, lbl, medians):
     return [p > medians[lbl[i]] for i, p in enumerate(prj)]
 
 
-def get_score(bin1, bin2, threshold, idx1, idx2, idf):
-    scores = 0
-    num_bin1 = np.array(bin1).shape[0]
-    num_bin2 = np.array(bin2).shape[0]
-    for i in range(bin1):
-        for j in range(bin2):
-            if (hamming(bin1[i], bin2[j]) < threshold):
-                scores += (idx1 == idx2) * idf[idx1]
-    return get_score
+def get_score(bin_test, bin_train, threshold, lbl_test, lbl_train, idf):
+    score = 0
+    num_test = len(bin_test)
+    num_train = len(bin_train)
+    for i in range(num_test):
+        for j in range(num_train):
+            if (hamming(bin_test[i], bin_train[j]) < threshold):
+                score += (lbl_test[i] == lbl_train[j]) * idf[lbl_test[i]]
+    score /= (num_test * num_train)
+    return score
