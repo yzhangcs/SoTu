@@ -69,8 +69,8 @@ def match(uri, top_k=20):
 
     # 定义Hamming阈值
     threshold = 25
-    scores = [he.get_score(binary, b, threshold, lbl, i, idf)
-              for b, i in zip(binaries, labels)]
+    scores = np.array([he.get_score(binary, b, threshold, lbl, i, idf)
+                       for b, i in zip(binaries, labels)])
     rank = np.argsort(-scores)[: top_k]
     images = [uris[r] for r in rank]
     return images

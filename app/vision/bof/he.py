@@ -23,7 +23,7 @@ def get_medians(prj_all, lbl_all, k):
 
 
 def get_binary(prj, lbl, medians):
-    return [p > medians[lbl[i]] for i, p in enumerate(prj)]
+    return [p > medians[i] for p, i in zip(prj, lbl)]
 
 
 def get_score(bin_test, bin_train, threshold, lbl_test, lbl_train, idf):
