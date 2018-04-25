@@ -9,7 +9,7 @@ from flask import current_app
 from scipy.cluster.vq import kmeans, vq
 from sklearn.preprocessing import normalize
 
-from . import sift
+from .rootsift import RootSIFT
 
 
 def extract(uris):
@@ -18,7 +18,7 @@ def extract(uris):
     images = [cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
               for uri in uris]
     # 获取每幅图的所有keypoint和对应的descriptor
-    keypoints, descriptors = sift.extract_all(images)
+    keypoints, descriptors = RootSIFT().extract_all(images)
     # 垂直堆叠所有的descriptor，每个128维
     des_all = np.vstack(descriptors)
 
@@ -51,7 +51,7 @@ def match(uri, top_k=20):
     k = len(centroids)
     img = cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
     # 计算要搜索的图像的所有descriptor
-    des = sift.extract(img)[1]
+    des = RootSIFT().extract(img)[1]
     # 映射要搜索的图像的所有descriptor到距其最近的聚类并得到该聚类的索引
     lbl = vq(des, centroids)[0]
     # 计算要搜索的图像的聚类频率向量
