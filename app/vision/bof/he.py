@@ -3,12 +3,18 @@
 import numpy as np
 
 
-def get_proj_matrix(db, d):
-    # 生成d * d的符合标准正态分布的随机矩阵
-    M = np.random.randn(d, d)
-    # QR分解得到正交矩阵Q
-    Q, R = np.linalg.qr(M)
-    return Q[:db, :]
+class HE(object):
+    def __init__(self, centroids, des_all, lbl_all):
+        # 获取64*128投影矩阵
+        self.P = get_proj_matrix(64, 128)
+
+    @classmethod
+    def get_proj_matrix(cls, db, d):
+        # 生成d * d的符合标准正态分布的随机矩阵
+        M = np.random.randn(d, d)
+        # QR分解得到正交矩阵Q
+        Q, R = np.linalg.qr(M)
+        return Q[:db, :]
 
 
 def get_medians(prj_all, lbl_all, k):
