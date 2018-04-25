@@ -46,7 +46,7 @@ def index():
 @main.route('/result', methods=['GET'])
 def result():
     uri = request.args.get('uri')
-    images = bof.match(uri, top_k=30)
+    images = bof.match(uri, top_k=20)
     return render_template('result.html', uri=uri, images=images)
 
 

@@ -44,9 +44,9 @@ def extract(uris):
 
 def match(uri, top_k=20):
     bof_path = os.path.join(current_app.config['FEATURE_DIR'], 'bof.pkl')
-    bof = open(bof_path, 'rb')
+    bof_pkl = open(bof_path, 'rb')
     # 读取所有图片的uri及对应feature，并读取其和所有的聚类中心
-    uris, features, idf, centroids = pickle.load(bof)
+    uris, features, idf, centroids = pickle.load(bof_pkl)
 
     k = len(centroids)
     img = cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
@@ -63,5 +63,4 @@ def match(uri, top_k=20):
 
     rank = np.argsort(-scores)[:top_k]
     images = [uris[r] for r in rank]
-    print(images)
     return images
