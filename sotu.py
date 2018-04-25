@@ -3,8 +3,8 @@
 import os
 
 from app import create_app
-from app.vision.datasets import caltech101, corel1k
-from app.vision.features import bof
+from app.vision.datasets import caltech101
+from app.vision import bof
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 

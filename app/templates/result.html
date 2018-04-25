@@ -20,8 +20,8 @@
         <div class="image-grid">
         {% for image in images %}
             <div class="image-item">
-                <img src="{{ url_for('main.download_file', uri=image['uri']) }}">
-                <div class="image-overlay">相似度：{{image['score']}}</br></div>
+                <img src="{{ url_for('main.download_file', uri=image) }}">
+                <div class="image-overlay"></div>
             </div>
         {% endfor %}
         </div>

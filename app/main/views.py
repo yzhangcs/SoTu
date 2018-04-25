@@ -8,7 +8,7 @@ from flask import (current_app, flash, redirect, render_template, request,
 from werkzeug.utils import secure_filename
 
 from app.utils import download
-from app.vision.features import bof
+from app.vision import bof
 
 from . import main
 from .forms import ImgForm, URLForm
