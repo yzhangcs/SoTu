@@ -18,7 +18,6 @@ class RootSIFT:
         # 对所有descriptor进行L1归一化并取平方根，eps防止除数为0
         des /= (des.sum(axis=1, keepdims=True) + eps)
         des = np.sqrt(des)
-
         return kp, des
 
     def extract_all(self, images, eps=1e-7):
