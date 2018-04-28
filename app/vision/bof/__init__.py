@@ -11,7 +11,6 @@ from sklearn.cluster import MiniBatchKMeans
 from . import he
 from .rootsift import RootSIFT
 
-
 # class BoF(object):
 #     def __init__(self, uris):
 #         self.n_uris = len(uris)
@@ -22,27 +21,19 @@ from .rootsift import RootSIFT
 #             current_app.config['FEATURE_DIR'], 'inv.pkl')
 #         self.bof_path = os.path.join(
 #             current_app.config['FEATURE_DIR'], 'bof.pkl')
-
 #     def load_rootsift(self):
 #         pass
 
 
-def extract(uris):
-    n_uris = len(uris)
+def load_rootsift():
     sift_path = os.path.join(current_app.config['FEATURE_DIR'], 'sift.pkl')
-    inv_path = os.path.join(current_app.config['FEATURE_DIR'], 'inv.pkl')
-    bof_path = os.path.join(current_app.config['FEATURE_DIR'], 'bof.pkl')
-    images = [cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
-              for uri in uris]
-
-    print("Get rootsift features of %d images" % n_uris)
     if os.path.exists(sift_path):
         with open(sift_path, 'rb') as sift_pkl:
             tmps, descriptors = pickle.load(sift_pkl)
             keypoints = [
-                [cv2.KeyPoint(x=tmp[0][0], y=tmp[0][1], _size=tmp[1],
-                              _angle=tmp[2], _response=tmp[3],
-                              _octave=tmp[4], _class_id=tmp[5])
+                [cv2.KeyPoint(x=t[0][0], y=t[0][1], _size=t[1],
+                              _angle=t[2], _response=t[3],
+                              _octave=t[4], _class_id=t[5])
                  for t in tmp]
                 for tmp in tmps
             ]
@@ -59,6 +50,18 @@ def extract(uris):
         ]
         with open(sift_path, 'wb') as sift_pkl:
             pickle.dump((tmps, descriptors), sift_pkl)
+    return keypoints, descriptors
+
+
+def extract(uris):
+    n_uris = len(uris)
+    inv_path = os.path.join(current_app.config['FEATURE_DIR'], 'inv.pkl')
+    bof_path = os.path.join(current_app.config['FEATURE_DIR'], 'bof.pkl')
+    images = [cv2.imread(os.path.join(current_app.config['DATA_DIR'], uri))
+              for uri in uris]
+
+    print("Get rootsift features of %d images" % n_uris)
+    keypoints, descriptors = load_rootsift()
     lens = [len(des) for des in descriptors]
 
     n_clusters = 2000  # TODO: 选择合适的聚类数
@@ -114,7 +117,7 @@ def extract(uris):
         pickle.dump((uris, lens, idf, kmeans, P), bof_pkl)
 
 
-def match(uri, top_k=20, reranking=5):
+def match(uri, top_k=20, reranking=3):
     bof_path = os.path.join(current_app.config['FEATURE_DIR'], 'bof.pkl')
     inv_path = os.path.join(current_app.config['FEATURE_DIR'], 'inv.pkl')
     bof_pkl = open(bof_path, 'rb')
@@ -162,7 +165,45 @@ def match(uri, top_k=20, reranking=5):
     ]
     scores = np.array([min(a, s) for a, s in zip(angle_scores, scale_scores)])
     scores = scores / lens
+    rank = np.argsort(-scores)[:top_k]
 
-    rank = np.argsort(-scores)
-    images = [uris[r] for r in rank[:top_k]]
+    keypoints, descriptors = load_rootsift()
+    print("Rerank the existing results %d times" % reranking)
+    for i in range(reranking):
+        scores = np.array([
+            geometric_consistency((kp, des), (keypoints[r], descriptors[r]))
+            for r in rank
+        ])
+        rank = [r for s, r in sorted(zip(-scores, rank))]
+    images = [uris[r] for r in rank]
     return images
+
+
+def geometric_consistency(feature1, feature2):
+    kp1, des1 = feature1
+    kp2, des2 = feature2
+
+    MIN_MATCH_COUNT = 10
+    FLANN_INDEX_KDTREE = 0
+    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+    search_params = dict(checks=50)
+
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matches = flann.knnMatch(des1, des2, k=2)
+
+    # store all the good matches as per Lowe's ratio test.
+    good = []
+    for m, n in matches:
+        if m.distance < 0.7 * n.distance:
+            good.append(m)
+
+    if len(good) > MIN_MATCH_COUNT:
+        src_pts = np.float32(
+            [kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+        dst_pts = np.float32(
+            [kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 3)
+        inliers = np.sum(mask.ravel())
+    else:
+        inliers = 0
+    return inliers
