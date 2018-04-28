@@ -26,21 +26,23 @@ $ cd SoTu
 
 ### 虚拟环境
 
-首先安装`virtualenv`，创建并激活虚拟环境. 
+首先确保安装`virtualenv`，并创建虚拟环境. 
+
+```sh
+$ virtualenv venv
+```
+
+激活虚拟环境的命令在Linux和Windows的环境下稍有不同.
 
 在Linux下：
 
 ```sh
-$ pip install --user virtualenv
-$ virtualenv venv
 $ . venv/bin/activate
 ```
 
 在Windows下：
 
 ```sh
-$ pip install virtualenv
-$ virtualenv venv
 $ venv\Scripts\activate
 ```
 

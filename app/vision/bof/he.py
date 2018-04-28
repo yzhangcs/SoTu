@@ -20,5 +20,5 @@ def bitspack(binary):
     return result
 
 
-def ham_dist(a, b):
+def distance(a, b):
     return bin(a ^ b).count("1")
