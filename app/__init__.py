@@ -4,8 +4,10 @@ from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 
 from config import config
+from vision.bof import BoF
 
 csrf = CSRFProtect()
+bof = BoF()
 
 
 def create_app(config_name):

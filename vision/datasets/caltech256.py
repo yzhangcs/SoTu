@@ -2,7 +2,7 @@
 
 import os
 import PIL
-from app.utils import download, list_files
+from utils import download, list_files
 
 
 def get_caltech256(root):
@@ -16,4 +16,4 @@ def get_caltech256(root):
         download(url, root, filename, untar=True)
     uris = list_files(caltech256_dir, ('png', 'jpg', 'jpeg', 'gif'))
     os.chdir(cwd)
-    return uris
+    return len(uris), uris

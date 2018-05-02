@@ -10,7 +10,7 @@
 {% block content %}
     <div class="image-wrapper">
         <div class="image-target">
-            <img src="{{ url_for('main.download_file', uri=uri) }}">
+            <img src="{{ url_for('static', filename='uploads/') }}{{ filename }}">
             <div class="image-info">目标图片</div>
         </div>
     {% if images %}

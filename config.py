@@ -5,9 +5,8 @@ import os
 
 class Config:
     # 路径配置
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    DATA_DIR = os.path.join(BASE_DIR, 'data')
-    FEATURE_DIR = os.path.join(DATA_DIR, 'features')
+    BASE_DIR = os.path.dirname(__file__)
+    UPLOAD_DIR = os.path.join(BASE_DIR, 'app/static/uploads')
     # 秘钥配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'it is a secret'
 
@@ -24,4 +23,6 @@ class DevelopmentConfig(Config):
 config = {
     'development': DevelopmentConfig,
     'default': DevelopmentConfig
+
+
 }

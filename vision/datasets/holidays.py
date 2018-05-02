@@ -4,7 +4,7 @@
 
 import os
 import PIL
-from app.utils import download, list_files
+from utils import download, list_files
 
 
 def get_holidays(root):
@@ -18,4 +18,4 @@ def get_holidays(root):
         download(url, root, filename, untar=True)
     uris = list_files(holidays_dir, ('png', 'jpg', 'jpeg', 'gif'))
     os.chdir(cwd)
-    return uris
+    return len(uris), uris
