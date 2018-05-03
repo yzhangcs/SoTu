@@ -2,6 +2,7 @@
 
 import os
 import pickle
+import time
 
 import click
 import cv2
@@ -27,10 +28,21 @@ class BoF(object):
 
     def init_app(self, app):
         @click.command('extract')
-        @with_appcontext
         def extract():
             self.extract()
+
+        @click.command('evaluate')
+        def evaluate():
+            aps = []
+            for i in range(0, 40, 4):
+                start = time.time()
+                ap = ukbench.evaluate(self.uris[i], self.match(self.uris[i]))
+                print('Query %s: ap = %4f, %4fs elapsed' %
+                      (self.uris[i], ap, time.time() - start))
+                aps.append(ap)
+            print('mAP of the %d images is %4f' % (len(aps), np.mean(aps)))
         app.cli.add_command(extract)
+        app.cli.add_command(evaluate)
 
     def extract(self):
         images = [cv2.imread(uri) for uri in self.uris]
@@ -98,7 +110,6 @@ class BoF(object):
 
         # 定义hamming阈值
         threshold = 25
-        print("Start to score all iamges")
         matches = [[] for i in range(self.n)]
         weights = [[] for i in range(self.n)]
         angle_diffs = [[] for i in range(self.n)]
@@ -128,14 +139,12 @@ class BoF(object):
                            ])
         rank = np.argsort(-scores)[:top_k]
 
-        print("Rerank the existing results %d times" % reranking)
         for i in range(reranking):
             inliers = np.zeros(top_k)
             for i, r in enumerate(rank):
                 pt_q, pt_t = zip(*matches[r])
                 inliers[i] = consistency(pt_q, pt_t)
             rank = [r for s, r in sorted(zip(-inliers, rank))]
-        ukbench.evaluate(uri, rank)
         images = [self.uris[r] for r in rank]
         return images
 

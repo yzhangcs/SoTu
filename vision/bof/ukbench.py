@@ -21,10 +21,14 @@ def get_ukbench(root):
     return len(uris), uris
 
 
-def evaluate(uri, results):
-    img_id = int(re.split(r'(\d+)', os.path.basename(uri))[1])
+def evaluate(uri, images):
+    def id_of(img):
+        return int(re.split(r'(\d+)', os.path.basename(img))[1])
+    img_id = id_of(uri)
     min_id = img_id - img_id % 4
     max_id = min_id + 4
+    results = [id_of(img) for img in images]
+
     precision = [0] * len(results)
     recall = [0] * len(results)
     positives = 0
@@ -41,6 +45,4 @@ def evaluate(uri, results):
         if recall[i] > recall[i - 1]:
             pr_sum += precision[i]
     ap = pr_sum / 4
-
-    with open('data/ap.txt', 'a') as ap_txt:
-        ap_txt.write(str(ap) + '\n')
+    return ap
