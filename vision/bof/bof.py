@@ -9,7 +9,7 @@ import numpy as np
 from flask.cli import with_appcontext
 from sklearn.cluster import MiniBatchKMeans
 
-from ..datasets import corel1k
+from . import ukbench
 from .geo import consistency
 from .he import HE
 from .inv import InvFile
@@ -18,7 +18,7 @@ from .sift import SIFT
 
 class BoF(object):
     def __init__(self):
-        self.n, self.uris = corel1k.get_corel1k('data')
+        self.n, self.uris = ukbench.get_ukbench('data')
         self.k = 2000
         self.path = 'data/features/bof.pkl'
         self.sift = SIFT()
@@ -135,6 +135,7 @@ class BoF(object):
                 pt_q, pt_t = zip(*matches[r])
                 inliers[i] = consistency(pt_q, pt_t)
             rank = [r for s, r in sorted(zip(-inliers, rank))]
+        ukbench.evaluate(uri, rank)
         images = [self.uris[r] for r in rank]
         return images
 
