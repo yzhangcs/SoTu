@@ -18,30 +18,27 @@ class SIFT(object):
             des = self.rootsift(des)
         return kp, des
 
-    def score(self, feature_q, feature_t):
-        kp_q, des_q = feature_q
-        kp_t, des_t = feature_t
-
+    def match(self, des_q, des_t):
         FLANN_INDEX_KDTREE = 0
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
         search_params = dict(checks=50)
-        ratio = 0.7  # as per Lowe's test
+        ratio = 0.7  # 按照Lowe的测试
 
         flann = cv2.FlannBasedMatcher(index_params, search_params)
         # 对des_q中的每个描述子，在des_t中找到最好的两个匹配
         two_nn = flann.knnMatch(des_q, des_t, k=2)
-        # 保存所有显著好于次匹配的最好匹配
-        one_nn = [first for first, second in two_nn
-                  if first.distance < ratio * second.distance]
-        if len(one_nn) > 0:
-            pts_q = np.float32(
-                [kp_q[m.queryIdx].pt for m in one_nn]
-            ).reshape(-1, 1, 2)
-            pts_t = np.float32(
-                [kp_t[m.trainIdx].pt for m in one_nn]
-            ).reshape(-1, 1, 2)
-            M, mask = cv2.findHomography(pts_q, pts_t, cv2.RANSAC, 5)
-            return np.sum(mask.ravel())
+        # 找到所有显著好于次匹配的最好匹配，得到对应的索引对
+        pairs = [(first.queryIdx, first.trainIdx) for first, second in two_nn
+                 if first.distance < ratio * second.distance]
+        return pairs
+
+    def score(self, pt_q, pt_t):
+        if len(pt_q) > 0:
+            # 获取匹配坐标的变换矩阵和正常点的掩码
+            M, mask = cv2.findHomography(np.float32(pt_q).reshape(-1, 1, 2),
+                                         np.float32(pt_t).reshape(-1, 1, 2),
+                                         cv2.RANSAC, 5)
+            return np.sum(mask)
         else:
             return 0
 

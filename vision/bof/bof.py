@@ -32,7 +32,7 @@ class BoF(object):
         @click.command('evaluate')
         def evaluate():
             aps = []
-            for i in range(0, 200, 4):
+            for i in range(0, 500, 4):
                 start = time.time()
                 ap = ukbench.evaluate(self.uris[i], self.match(self.uris[i]))
                 print('Query %s: ap = %4f, %4fs elapsed' %
@@ -110,6 +110,7 @@ class BoF(object):
 
         # 定义hamming阈值
         threshold = 24
+        matches = [[] for i in range(self.n)]
         weights = [[] for i in range(self.n)]
         angle_diffs = [[] for i in range(self.n)]
         scale_diffs = [[] for i in range(self.n)]
@@ -117,6 +118,7 @@ class BoF(object):
         for sig_q, lbl_q, (pt_q, ang_q, sca_q) in zip(signature, label, geo):
             for img_id, pt_t, ang_t, sca_t, sig_t in entries[lbl_q]:
                 if he.distance(sig_q, sig_t) < threshold:
+                    matches[img_id].append((pt_q, pt_t))
                     weights[img_id].append(idf[lbl_q])
                     angle_diffs[img_id].append(
                         np.arctan2(np.sin(ang_q - ang_t),
@@ -124,11 +126,12 @@ class BoF(object):
                     )
                     scale_diffs[img_id].append(sca_q - sca_t)
         angle_scores = [
-            max(np.histogram(ad, bins=5, range=(-np.pi, np.pi), weights=w)[0])
+            max(np.histogram(ad, bins=127,
+                             range=(-np.pi, np.pi), weights=w)[0])
             for ad, w in zip(angle_diffs, weights)
         ]
         scale_scores = [
-            max(np.histogram(sd, bins=5, range=(-5, 5), weights=w)[0])
+            max(np.histogram(sd, bins=127, range=(-5, 5), weights=w)[0])
             for sd, w in zip(scale_diffs, weights)
         ]
         scores = np.array(
@@ -139,12 +142,18 @@ class BoF(object):
 
         if rerank:
             scores = np.zeros(top_k)
-            keypoints, descriptors = self.sift.load()
-
+            # keypoints, descriptors = self.sift.load()
             for i, r in enumerate(rank):
-                scores[i] = self.sift.score(
-                    (kp, des), (keypoints[r], descriptors[r])
-                )
+                pt_q, pt_t = [], []
+                # # 使用kNN算法获取匹配坐标
+                # pairs = self.sift.match(des, descriptors[r])
+                # for index_q, index_t in pairs:
+                #     pt_q.append(kp[index_q].pt)
+                #     pt_t.append(keypoints[r][index_t].pt)
+                for q, t in matches[r]:
+                    pt_q.append(q)
+                    pt_t.append(t)
+                scores[i] = self.sift.score(pt_q, pt_t)
             rank = [r for s, r in sorted(zip(-scores, rank))]
         images = [self.uris[r] for r in rank]
         return images
