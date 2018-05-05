@@ -11,7 +11,6 @@ from flask.cli import with_appcontext
 from sklearn.cluster import MiniBatchKMeans
 
 from . import ukbench
-from .geo import consistency
 from .he import HE
 from .inv import InvFile
 from .sift import SIFT
@@ -19,11 +18,10 @@ from .sift import SIFT
 
 class BoF(object):
     def __init__(self):
+        self.k = 5000
         self.n, self.uris = ukbench.get_ukbench('data')
-        self.k = 2000
         self.path = 'data/features/bof.pkl'
         self.sift = SIFT()
-        self.he = HE(128, 64, self.k)
         self.inv = InvFile(self.k, self.n)
 
     def init_app(self, app):
@@ -34,7 +32,7 @@ class BoF(object):
         @click.command('evaluate')
         def evaluate():
             aps = []
-            for i in range(0, 40, 4):
+            for i in range(0, 200, 4):
                 start = time.time()
                 ap = ukbench.evaluate(self.uris[i], self.match(self.uris[i]))
                 print('Query %s: ap = %4f, %4fs elapsed' %
@@ -62,23 +60,23 @@ class BoF(object):
 
         print("Start kmeans with %d centroids" % self.k)
         kmeans = MiniBatchKMeans(
-            n_clusters=self.k, init_size=self.k * 3
+            n_clusters=self.k, batch_size=1000, init_size=self.k * 3
         ).fit(des_all)
         # 映射每幅图的所有描述子到距其最近的聚类并得到聚类索引
         labels = [kmeans.predict(des) for des in descriptors]
 
         print("Porject %d descriptors from 128d to 64d" % len(des_all))
-        projections = [self.he.project(des) for des in descriptors]
+        he = HE(64, 128, self.k)
+        projections = [he.project(des) for des in descriptors]
         prj_all = np.vstack([prj for prj in projections if prj is not None])
         label_all = np.hstack([label for label in labels if label is not None])
 
         print("Calculate medians of %d visual words" % self.k)
-        self.he.fit(prj_all, label_all)
+        he.fit(prj_all, label_all)
 
         print("Calculate binary signatures of %d projections" % len(des_all))
-        # 得到每幅图所有描述子对应的Hamming编码
         signatures = [
-            [self.he.signature(p, l) for p, l in zip(prj, label)]
+            [he.signature(p, l) for p, l in zip(prj, label)]
             for prj, label in zip(projections, labels)
         ]
 
@@ -89,70 +87,73 @@ class BoF(object):
         freqs = np.array([
             np.bincount(label, minlength=self.k) for label in labels
         ])
+        # 计算每幅图频率向量的模
+        norms = np.array([np.linalg.norm(freq) for freq in freqs])
         # 计算聚类频率矩阵的idf(sklearn的实现方式)
         idf = np.log((self.n + 1) / (np.sum((freqs > 0), axis=0) + 1)) + 1
-        self.dump(kmeans, idf)
+        self.dump(kmeans, he, norms, idf)
 
-    def match(self, uri, top_k=20, reranking=1):
-        kmeans, idf = self.load()
+    def match(self, uri, top_k=20, rerank=True):
+        kmeans, he, norms, idf = self.load()
         entries = self.inv.load()
         # 计算描述子
         kp, des = self.sift.extract(cv2.imread(uri))
         # 计算每个关键点对应的关于角度和尺度的几何信息
-        geom = [(k.pt, np.radians(k.angle), np.log2(k.octave)) for k in kp]
+        geo = [(k.pt, np.radians(k.angle), np.log2(k.octave)) for k in kp]
         # 映射所有描述子到距其最近的聚类并得到该聚类的索引
         label = kmeans.predict(des)
 
         # 根据投影矩阵对描述子降维
-        prj = self.he.project(des)
+        prj = he.project(des)
         # 计算所有描述子对应的Hamming编码
-        signature = [self.he.signature(p, l) for p, l in zip(prj, label)]
+        signature = [he.signature(p, l) for p, l in zip(prj, label)]
 
         # 定义hamming阈值
-        threshold = 25
-        matches = [[] for i in range(self.n)]
+        threshold = 24
         weights = [[] for i in range(self.n)]
         angle_diffs = [[] for i in range(self.n)]
         scale_diffs = [[] for i in range(self.n)]
         # 匹配所有所属聚类相同且对应编码的hamming距离不超过阈值的特征
-        for sig_q, lbl_q, (pt_q, ang_q, sca_q) in zip(signature, label, geom):
-            for img_id, features in entries[lbl_q].items():
-                for pt_t, ang_t, sca_t, sig_t in features:
-                    if self.he.distance(sig_q, sig_t) < threshold:
-                        matches[img_id].append((pt_q, pt_t))
-                        weights[img_id].append(idf[lbl_q])
-                        angle_diffs[img_id].append(
-                            np.arctan2(np.sin(ang_q - ang_t),
-                                       np.cos(ang_q - ang_t))
-                        )
-                        scale_diffs[img_id].append(sca_q - sca_t)
+        for sig_q, lbl_q, (pt_q, ang_q, sca_q) in zip(signature, label, geo):
+            for img_id, pt_t, ang_t, sca_t, sig_t in entries[lbl_q]:
+                if he.distance(sig_q, sig_t) < threshold:
+                    weights[img_id].append(idf[lbl_q])
+                    angle_diffs[img_id].append(
+                        np.arctan2(np.sin(ang_q - ang_t),
+                                   np.cos(ang_q - ang_t))
+                    )
+                    scale_diffs[img_id].append(sca_q - sca_t)
         angle_scores = [
-            max(np.histogram(ad, bins=8, range=(-np.pi, np.pi), weights=w)[0])
+            max(np.histogram(ad, bins=5, range=(-np.pi, np.pi), weights=w)[0])
             for ad, w in zip(angle_diffs, weights)
         ]
         scale_scores = [
-            max(np.histogram(sd, bins=8, range=(-5, 5), weights=w)[0])
+            max(np.histogram(sd, bins=5, range=(-5, 5), weights=w)[0])
             for sd, w in zip(scale_diffs, weights)
         ]
-        scores = np.array([min(a, s)
-                           for a, s in zip(angle_scores, scale_scores)
-                           ])
+        scores = np.array(
+            [min(a, s) for a, s in zip(angle_scores, scale_scores)]
+        )
+        scores = scores / norms
         rank = np.argsort(-scores)[:top_k]
 
-        for i in range(reranking):
-            inliers = np.zeros(top_k)
+        if rerank:
+            scores = np.zeros(top_k)
+            keypoints, descriptors = self.sift.load()
+
             for i, r in enumerate(rank):
-                pt_q, pt_t = zip(*matches[r])
-                inliers[i] = consistency(pt_q, pt_t)
-            rank = [r for s, r in sorted(zip(-inliers, rank))]
+                scores[i] = self.sift.score(
+                    (kp, des), (keypoints[r], descriptors[r])
+                )
+            rank = [r for s, r in sorted(zip(-scores, rank))]
         images = [self.uris[r] for r in rank]
         return images
 
-    def dump(self, kmeans, idf):
+    def dump(self, kmeans, he, norms, idf):
         with open(self.path, 'wb') as bof_pkl:
-            pickle.dump((kmeans, idf), bof_pkl)
+            pickle.dump((kmeans, he, norms, idf), bof_pkl)
 
     def load(self):
         with open(self.path, 'rb') as bof_pkl:
-            kmeans, idf = pickle.load(bof_pkl)
-        return kmeans, idf
+            kmeans, he, norms, idf = pickle.load(bof_pkl)
+        return kmeans, he, norms, idf
