@@ -4,13 +4,12 @@
 
 import os
 import posixpath
-import re
 
 from utils import download, list_files
 
 
 def get_ukbench(root):
-    url = 'https://ia800809.us.archive.org/5/items/ukbench/ukbench.zip'
+    url = 'https://archive.org/download/ukbench/ukbench.zip'
     filename = 'ukbench.zip'
     ukbench_dir = 'ukbench'
 

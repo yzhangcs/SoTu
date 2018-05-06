@@ -18,7 +18,7 @@ from .sift import SIFT
 
 class BoF(object):
     def __init__(self):
-        self.k = 5000
+        self.k = 20000
         self.n, self.uris = ukbench.get_ukbench('data')
         self.path = 'data/features/bof.pkl'
         self.sift = SIFT()
@@ -32,7 +32,7 @@ class BoF(object):
         @click.command('evaluate')
         def evaluate():
             aps = []
-            for i in range(0, 500, 4):
+            for i in range(0, self.n, 4):
                 start = time.time()
                 ap = ukbench.evaluate(self.uris[i], self.match(self.uris[i]))
                 print('Query %s: ap = %4f, %4fs elapsed' %
@@ -56,7 +56,7 @@ class BoF(object):
         keypoints, descriptors = self.sift.load()
 
         # 垂直堆叠所有的描述子，每个128维
-        des_all = np.vstack([des for des in descriptors if des is not None])
+        des_all = np.vstack([des for des in descriptors])
 
         print("Start kmeans with %d centroids" % self.k)
         kmeans = MiniBatchKMeans(
@@ -68,8 +68,8 @@ class BoF(object):
         print("Porject %d descriptors from 128d to 64d" % len(des_all))
         he = HE(64, 128, self.k)
         projections = [he.project(des) for des in descriptors]
-        prj_all = np.vstack([prj for prj in projections if prj is not None])
-        label_all = np.hstack([label for label in labels if label is not None])
+        prj_all = np.vstack([prj for prj in projections])
+        label_all = np.hstack([label for label in labels])
 
         print("Calculate medians of %d visual words" % self.k)
         he.fit(prj_all, label_all)
@@ -93,7 +93,7 @@ class BoF(object):
         idf = np.log((self.n + 1) / (np.sum((freqs > 0), axis=0) + 1)) + 1
         self.dump(kmeans, he, norms, idf)
 
-    def match(self, uri, top_k=20, rerank=True):
+    def match(self, uri, top_k=20, rerank=False):
         kmeans, he, norms, idf = self.load()
         entries = self.inv.load()
         # 计算描述子
@@ -110,33 +110,39 @@ class BoF(object):
 
         # 定义hamming阈值
         threshold = 24
-        matches = [[] for i in range(self.n)]
-        weights = [[] for i in range(self.n)]
-        angle_diffs = [[] for i in range(self.n)]
-        scale_diffs = [[] for i in range(self.n)]
+        scores = np.zeros(self.n)
+        # # 保存所有匹配特征关键点的坐标
+        # matches = [[] for i in range(self.n)]
+        # # 保存所有匹配特征关键点的角度差
+        # angle_diffs = [[] for i in range(self.n)]
+        # # 保存所有匹配特征关键点的尺度差
+        # scale_diffs = [[] for i in range(self.n)]
+        # # 保存所有匹配特征关键点的几何差对应的投票权重
+        # weights = [[] for i in range(self.n)]
         # 匹配所有所属聚类相同且对应编码的hamming距离不超过阈值的特征
         for sig_q, lbl_q, (pt_q, ang_q, sca_q) in zip(signature, label, geo):
             for img_id, pt_t, ang_t, sca_t, sig_t in entries[lbl_q]:
-                if he.distance(sig_q, sig_t) < threshold:
-                    matches[img_id].append((pt_q, pt_t))
-                    weights[img_id].append(idf[lbl_q])
-                    angle_diffs[img_id].append(
-                        np.arctan2(np.sin(ang_q - ang_t),
-                                   np.cos(ang_q - ang_t))
-                    )
-                    scale_diffs[img_id].append(sca_q - sca_t)
-        angle_scores = [
-            max(np.histogram(ad, bins=127,
-                             range=(-np.pi, np.pi), weights=w)[0])
-            for ad, w in zip(angle_diffs, weights)
-        ]
-        scale_scores = [
-            max(np.histogram(sd, bins=127, range=(-5, 5), weights=w)[0])
-            for sd, w in zip(scale_diffs, weights)
-        ]
-        scores = np.array(
-            [min(a, s) for a, s in zip(angle_scores, scale_scores)]
-        )
+                scores[img_id] += idf[lbl_q]
+                # if he.distance(sig_q, sig_t) < threshold:
+                #     matches[img_id].append((pt_q, pt_t))
+                #     angle_diffs[img_id].append(
+                #         np.arctan2(np.sin(ang_q - ang_t),
+                #                    np.cos(ang_q - ang_t))
+                #     )
+                #     scale_diffs[img_id].append(sca_q - sca_t)
+                #     weights[img_id].append(idf[lbl_q])
+        # angle_scores = [
+        #     max(np.histogram(ad, bins=127,
+        #                      range=(-np.pi, np.pi), weights=w)[0])
+        #     for ad, w in zip(angle_diffs, weights)
+        # ]
+        # scale_scores = [
+        #     max(np.histogram(sd, bins=127, range=(-5, 5), weights=w)[0])
+        #     for sd, w in zip(scale_diffs, weights)
+        # ]
+        # scores = np.array(
+        #     [min(a, s) for a, s in zip(angle_scores, scale_scores)]
+        # )
         scores = scores / norms
         rank = np.argsort(-scores)[:top_k]
 
