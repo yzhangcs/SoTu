@@ -8,7 +8,6 @@ import numpy as np
 
 class SIFT(object):
     def __init__(self):
-        self.path = 'data/features/sift.pkl'
         self.extractor = cv2.xfeatures2d.SIFT_create()
 
     def extract(self, image, rootsift=True):
@@ -50,8 +49,16 @@ class SIFT(object):
             des = np.sqrt(des)
         return des
 
-    def load(self):
-        with open(self.path, 'rb') as sift_pkl:
+    def dump(self, keypoints, descriptors, path):
+        tmps = [
+            [(k.pt, k.size, k.angle, k.response, k.octave, k.class_id)
+             for k in kp] for kp in keypoints
+        ]
+        with open(path, 'wb') as sift_pkl:
+            pickle.dump((tmps, descriptors), sift_pkl)
+
+    def load(self, path):
+        with open(path, 'rb') as sift_pkl:
             tmps, descriptors = pickle.load(sift_pkl)
             keypoints = [
                 [cv2.KeyPoint(x=t[0][0], y=t[0][1], _size=t[1], _angle=t[2],
@@ -59,11 +66,3 @@ class SIFT(object):
                     for t in tmp] for tmp in tmps
             ]
         return keypoints, descriptors
-
-    def dump(self, keypoints, descriptors):
-        tmps = [
-            [(k.pt, k.size, k.angle, k.response, k.octave, k.class_id)
-             for k in kp] for kp in keypoints
-        ]
-        with open(self.path, 'wb') as sift_pkl:
-            pickle.dump((tmps, descriptors), sift_pkl)

@@ -4,6 +4,7 @@
 
 import os
 import posixpath
+import re
 
 from utils import download, list_files
 

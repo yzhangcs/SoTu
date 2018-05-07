@@ -7,8 +7,8 @@ import time
 import click
 import cv2
 import numpy as np
-from flask.cli import with_appcontext
 from sklearn.cluster import MiniBatchKMeans
+from werkzeug.utils import cached_property
 
 from . import ukbench
 from .he import HE
@@ -18,11 +18,12 @@ from .sift import SIFT
 
 class BoF(object):
     def __init__(self):
-        self.k = 20000
+        self.k = 5000
         self.n, self.uris = ukbench.get_ukbench('data')
-        self.path = 'data/features/bof.pkl'
+        self.bof_path = 'data/features/bof.pkl'
+        self.sift_path = 'data/features/sift.pkl'
+        self.inv_path = 'data/features/inv.pkl'
         self.sift = SIFT()
-        self.inv = InvFile(self.k, self.n)
 
     def init_app(self, app):
         @click.command('extract')
@@ -31,14 +32,18 @@ class BoF(object):
 
         @click.command('evaluate')
         def evaluate():
-            aps = []
+            queries = []
             for i in range(0, self.n, 4):
                 start = time.time()
                 ap = ukbench.evaluate(self.uris[i], self.match(self.uris[i]))
+                elapse = time.time() - start
                 print('Query %s: ap = %4f, %4fs elapsed' %
-                      (self.uris[i], ap, time.time() - start))
-                aps.append(ap)
-            print('mAP of the %d images is %4f' % (len(aps), np.mean(aps)))
+                      (self.uris[i], ap, elapse))
+                queries.append((ap, elapse))
+            mAP, mT = np.mean(queries, axis=0)
+            print('mAP of the %d images is %4f, %4fs per query' %
+                  (len(queries), mAP, mT))
+
         app.cli.add_command(extract)
         app.cli.add_command(evaluate)
 
@@ -48,19 +53,18 @@ class BoF(object):
         print("Get sift features of %d images" % self.n)
         # # 获取每幅图的所有关键点和对应的描述子
         # keypoints, descriptors = zip(
-        #     *[self.sift.extract(img) for img in images]
+        #     *[self.sift.extract(img, rootsift=True) for img in images]
         # )
-        # # 每个sift特征转为rootsift
-        # descriptors = [self.sift.rootsift(des) for des in descriptors]
-        # self.sift.dump(keypoints, descriptors)
-        keypoints, descriptors = self.sift.load()
+        # self.sift.dump(keypoints, descriptors, self.sift_path)
+        keypoints, descriptors = self.sift.load(self.sift_path)
 
         # 垂直堆叠所有的描述子，每个128维
         des_all = np.vstack([des for des in descriptors])
 
         print("Start kmeans with %d centroids" % self.k)
         kmeans = MiniBatchKMeans(
-            n_clusters=self.k, batch_size=1000, init_size=self.k * 3
+            n_clusters=self.k, batch_size=1000,
+            random_state=0, init_size=self.k * 3
         ).fit(des_all)
         # 映射每幅图的所有描述子到距其最近的聚类并得到聚类索引
         labels = [kmeans.predict(des) for des in descriptors]
@@ -81,7 +85,8 @@ class BoF(object):
         ]
 
         # 建立聚类的倒排索引
-        self.inv.dump(keypoints, signatures, labels)
+        inv = InvFile(self.k, self.n)
+        inv.dump(keypoints, signatures, labels, self.inv_path)
 
         # 统计每幅图所有描述子所属聚类的频率向量
         freqs = np.array([
@@ -91,13 +96,14 @@ class BoF(object):
         norms = np.array([np.linalg.norm(freq) for freq in freqs])
         # 计算聚类频率矩阵的idf(sklearn的实现方式)
         idf = np.log((self.n + 1) / (np.sum((freqs > 0), axis=0) + 1)) + 1
-        self.dump(kmeans, he, norms, idf)
+
+        with open(self.bof_path, 'wb') as bof_pkl:
+            pickle.dump((kmeans, he, norms, idf), bof_pkl)
 
     def match(self, uri, top_k=20, rerank=False):
-        kmeans, he, norms, idf = self.load()
-        entries = self.inv.load()
+        kmeans, he, norms, idf = self.features
         # 计算描述子
-        kp, des = self.sift.extract(cv2.imread(uri))
+        kp, des = self.sift.extract(cv2.imread(uri), rootsift=True)
         # 计算每个关键点对应的关于角度和尺度的几何信息
         geo = [(k.pt, np.radians(k.angle), np.log2(k.octave)) for k in kp]
         # 映射所有描述子到距其最近的聚类并得到该聚类的索引
@@ -120,17 +126,17 @@ class BoF(object):
         # # 保存所有匹配特征关键点的几何差对应的投票权重
         # weights = [[] for i in range(self.n)]
         # 匹配所有所属聚类相同且对应编码的hamming距离不超过阈值的特征
-        for sig_q, lbl_q, (pt_q, ang_q, sca_q) in zip(signature, label, geo):
-            for img_id, pt_t, ang_t, sca_t, sig_t in entries[lbl_q]:
+        for (pt_q, ang_q, sca_q), sig_q, lbl_q in zip(geo, signature, label):
+            for img_id, pt_t, ang_t, sca_t, sig_t in self.entries[lbl_q]:
                 scores[img_id] += idf[lbl_q]
-                # if he.distance(sig_q, sig_t) < threshold:
-                #     matches[img_id].append((pt_q, pt_t))
-                #     angle_diffs[img_id].append(
-                #         np.arctan2(np.sin(ang_q - ang_t),
-                #                    np.cos(ang_q - ang_t))
-                #     )
-                #     scale_diffs[img_id].append(sca_q - sca_t)
-                #     weights[img_id].append(idf[lbl_q])
+        # if he.distance(sig_q, sig_t) < threshold:
+        #     matches[img_id].append((pt_q, pt_t))
+        #     angle_diffs[img_id].append(
+        #         np.arctan2(np.sin(ang_q - ang_t),
+        #                    np.cos(ang_q - ang_t))
+        #     )
+        #     scale_diffs[img_id].append(sca_q - sca_t)
+        #     weights[img_id].append(idf[lbl_q])
         # angle_scores = [
         #     max(np.histogram(ad, bins=127,
         #                      range=(-np.pi, np.pi), weights=w)[0])
@@ -164,11 +170,12 @@ class BoF(object):
         images = [self.uris[r] for r in rank]
         return images
 
-    def dump(self, kmeans, he, norms, idf):
-        with open(self.path, 'wb') as bof_pkl:
-            pickle.dump((kmeans, he, norms, idf), bof_pkl)
-
-    def load(self):
-        with open(self.path, 'rb') as bof_pkl:
+    @cached_property
+    def features(self):
+        with open(self.bof_path, 'rb') as bof_pkl:
             kmeans, he, norms, idf = pickle.load(bof_pkl)
         return kmeans, he, norms, idf
+
+    @cached_property
+    def entries(self):
+        return InvFile.load(self.inv_path)
