@@ -4,7 +4,7 @@ from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 
 from config import config
-from vision.bof import BoF
+from vision import BoF
 
 bof = BoF()
 csrf = CSRFProtect()

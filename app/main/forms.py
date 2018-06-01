@@ -17,5 +17,5 @@ class URLForm(FlaskForm):
     txturl = StringField(validators=[
         DataRequired(),
         Regexp(r'(?:http\:|https\:)?\/\/.*\.(?:png|jpg|jpeg|gif)$',
-               message='Invalid image url.')
+               message="Invalid image url.")
     ])
