@@ -77,7 +77,7 @@ $ flask run -h localhost -p 8080
 $ flask evaluate
 ```
 
-不同方法的评价结果如下表，其中BoF模型设置的聚类数为5000，HE的阈值<i>h<sub>t</sub></i>为23：
+不同方法的评价结果如下表，其中BoF模型设置的聚类数为5000，HE的阈值***ht***为23：
 
 |      methods       |   mAP    |
 | :----------------: | :------: |
@@ -97,7 +97,7 @@ Jégou提到对于ukbench数据集而言，WGC方法的效果较差[^3]，因此
 * Zhao W L, Wu X, Ngo C W. On the Annotation of Web Videos by Efficient Near-Duplicate Search[J]. IEEE Transactions on Multimedia, 2010, 12(5):448-461.
 * Philbin J, Chum O, Isard M, et al. Object retrieval with large vocabularies and fast spatial matching [C]. IEEE Conference on Computer Vision and Pattern Recognition. Minneapolis, USA, 2007: 1-8.
 
-------
+
 
 [^1]: http://flask.pocoo.org/docs/0.12/
 [^2]: https://archive.org/download/ukbench/ukbench.zip

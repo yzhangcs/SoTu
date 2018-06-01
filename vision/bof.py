@@ -105,7 +105,7 @@ class BoF(object):
         with open(self.bof_path, 'wb') as bof_pkl:
             pickle.dump((kmeans, he, norms, idf), bof_pkl)
 
-    def match(self, uri, top_k=20, ht=23, rerank=False):
+    def match(self, uri, top_k=20, ht=23, rerank=True):
         kmeans, he, norms, idf = self.bof
         # 计算关键点和描述子
         kp, des = self.sift.extract(cv2.imread(uri, cv2.IMREAD_GRAYSCALE),
