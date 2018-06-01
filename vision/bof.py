@@ -120,18 +120,18 @@ class BoF(object):
         # 计算所有描述子对应的Hamming编码
         signature = [he.signature(p, l) for p, l in zip(prj, label)]
 
-        wgc = WGC(self.n, 17, 9)
+        # wgc = WGC(self.n, 17, 7)
         scores = np.zeros(self.n)
         # 匹配所有所属聚类相同且对应编码的hamming距离不超过阈值的特征
         for (ang_q, sca_q), sig_q, lbl_q in zip(geo, signature, label):
             for img_id, ang_t, sca_t, sig_t in self.entries[lbl_q]:
                 if he.distance(sig_q, sig_t) < ht:
                     scores[img_id] += idf[lbl_q]
-                    wgc.vote(img_id,
-                             np.arctan2(np.sin(ang_t - ang_q),
-                                        np.cos(ang_t - ang_q)),
-                             sca_t - sca_q)
-        scores *= wgc.filter()
+                    # wgc.vote(img_id,
+                    #          np.arctan2(np.sin(ang_t - ang_q),
+                    #                     np.cos(ang_t - ang_q)),
+                    #          sca_t - sca_q)
+        # scores *= wgc.filter()
         scores = scores / norms
         rank = np.argsort(-scores)[:top_k]
 

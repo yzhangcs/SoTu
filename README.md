@@ -77,7 +77,7 @@ $ flask run -h localhost -p 8080
 $ flask evaluate
 ```
 
-不同方法的评价结果如下表，其中BoF模型设置的聚类数为5000，HE的阈值$h_t$为23：
+不同方法的评价结果如下表，其中BoF模型设置的聚类数为5000，HE的阈值<i>h<sub>t</sub></i>为23：
 
 |      methods       |   mAP    |
 | :----------------: | :------: |
