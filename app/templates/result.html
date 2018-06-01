@@ -9,21 +9,18 @@
 
 {% block content %}
     <div class="image-wrapper">
-    {% if images %}
-        <div class="image-result">
-            <img id="imgbest" src="{{ url_for('main.download_file', filename=images[0]) }}">
-            <div class="image-info">
-                <div id="image-similarity"></div>
-                <div id="image-size"></div>
-            </div>
+        <div class="image-target">
+            <img src="{{ url_for('static', filename='uploads/') }}{{ filename }}">
+            <div class="image-info">目标图片</div>
         </div>
+    {% if images %}
         <div class="image-tip">
-            <span>其他图片 | 按相似度排序</span>
+            <span>结果图片 | 按相似度排序</span>
         </div>
         <div class="image-grid">
         {% for image in images %}
             <div class="image-item">
-                <img src="{{ url_for('main.download_file', filename=image) }}">
+                <img src="{{ url_for('main.download_file', uri=image) }}">
                 <div class="image-overlay"></div>
             </div>
         {% endfor %}

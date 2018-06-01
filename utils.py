@@ -12,10 +12,10 @@ def download(url, root, filename, untar=False):
     if not os.path.exists(root):
         os.mkdir(root)
     if os.path.exists(fpath):
-        print('Data already downloaded')
+        print("Data already downloaded")
     else:
-        print('Downloading ' + url + ' to ' + fpath)
-        err_msg = 'URL fetch failure on {}: {} -- {}'
+        print("Downloading %s to %s" % (url, fpath))
+        err_msg = "URL fetch failure on {}: {} -- {}"
         try:
             try:
                 urlretrieve(url, fpath)

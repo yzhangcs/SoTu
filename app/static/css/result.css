@@ -12,19 +12,19 @@ body {
     min-width: 400px;
 }
 
-.image-result img {
+.image-target img {
     height: 100px;
 }
 
-.image-result .image-info {
+.image-target .image-info {
     display: inline-block;
     margin-left: 20px;
     color: white;
+    vertical-align: top;
     font-size: 16px;
 }
 
 .image-tip {
-    margin: 10px 0 10px 0;
     color: white;
     font-size: 20px;
     line-height: 40px;
@@ -44,9 +44,9 @@ body {
 
 .image-grid img {
     flex: 1 1 auto;
-    height: 150px;
-    max-width: 100%;
     min-width: 100%;
+    max-width: 100%;
+    height: 150px;
     vertical-align: middle;
 
     object-fit: cover;
@@ -58,8 +58,8 @@ body {
 }
 
 .image-grid .image-item {
-    flex-grow: 1;
     position: relative;
+    flex-grow: 1;
     margin-top: 10px;
     margin-right: 10px;
 }
