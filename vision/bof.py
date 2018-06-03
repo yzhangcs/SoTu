@@ -53,17 +53,17 @@ class BoF(object):
     def extract(self):
         print("Get sift features of %d images" % self.n)
         # 获取每幅图的所有关键点和对应的描述子
-        # keypoints, descriptors = zip(
-        #     *[self.sift.extract(cv2.imread(self.ukbench[i],
-        #                                    cv2.IMREAD_GRAYSCALE),
-        #                         rootsift=True)
-        #         for i in range(self.n)]
-        # )
-        # for i, (kp, des) in enumerate(zip(keypoints, descriptors)):
-        #     self.sift.dump(kp, des, str(i))
         keypoints, descriptors = zip(
-            *[self.sift.load(str(i)) for i in range(self.n)]
+            *[self.sift.extract(cv2.imread(self.ukbench[i],
+                                           cv2.IMREAD_GRAYSCALE),
+                                rootsift=True)
+                for i in range(self.n)]
         )
+        for i, (kp, des) in enumerate(zip(keypoints, descriptors)):
+            self.sift.dump(kp, des, str(i))
+        # keypoints, descriptors = zip(
+        #     *[self.sift.load(str(i)) for i in range(self.n)]
+        # )
         # 垂直堆叠所有的描述子，每个128维
         des_all = np.vstack([des for des in descriptors])
 

@@ -41,9 +41,9 @@ $ flask extract
 $ venv\Scripts\activate
 ```
 
-如果用cmd设置环境变量`FLASK_APP`，需要用`set`代替上面的`export`. 
+如果用cmd设置环境变量，需要用`set`代替上面的`export`. 
 
-如果用powershell设置该环境变量，则命令为：
+如果用powershell设置，则命令为：
 
 ```sh
 $ $env:FLASK_APP="sotu.py"
