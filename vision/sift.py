@@ -3,10 +3,9 @@
 import os
 import pickle
 
-import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.patches import ConnectionPatch
+
+import cv2
 
 
 class SIFT(object):
@@ -43,6 +42,11 @@ class SIFT(object):
             return []
 
     def draw(self, img_q, img_t, pt_qt):
+        import matplotlib
+        matplotlib.use('Agg')
+        from matplotlib import pyplot as plt
+        from matplotlib.patches import ConnectionPatch
+
         fig, (ax_q, ax_t) = plt.subplots(1, 2, figsize=(8, 4))
         for pt_q, pt_t in pt_qt:
             con = ConnectionPatch(pt_t, pt_q,
