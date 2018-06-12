@@ -15,7 +15,7 @@ class UKBENCH(object):
     def __init__(self, root):
         self.root = root
         if not posixpath.exists(posixpath.join(self.root, self.ukbench_dir)):
-            download(url, self.root, filename, untar=True)
+            download(self.url, self.root, self.filename, untar=True)
         self.uris = list_files(posixpath.join(self.root,
                                               self.ukbench_dir,
                                               'full'),
