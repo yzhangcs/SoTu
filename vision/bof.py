@@ -57,6 +57,7 @@ class BoF(object):
         app.cli.add_command(extract)
         app.cli.add_command(evaluate)
 
+    # todo
     def train(self):
         print("Get sift features of %d images" % self.n)
 
@@ -147,7 +148,6 @@ class BoF(object):
 
         # wgc = WGC(self.n, 17, 7)
         scores = np.zeros(self.n)
-        print("n is: %d" % self.n)
         # 匹配所有所属聚类相同且对应编码的hamming距离不超过阈值的特征
         for (ang_q, sca_q), sig_q, lbl_q in zip(geo, signature, label):
             for img_id, ang_t, sca_t, sig_t in self.entries[lbl_q]:
