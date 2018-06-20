@@ -15,10 +15,14 @@ class SIFT(object):
 
     def extract(self, gray, rootsift=True):
         # 计算图片的所有关键点和对应的描述子
+        status = 0
         kp, des = self.extractor.detectAndCompute(gray, None)
+        if len(kp) <= 0:
+            return status, kp, des
         if rootsift:
             des = self.rootsift(des)
-        return kp, des
+        status = 1
+        return status, kp, des
 
     def match(self, des_q, des_t):
         ratio = 0.7  # 按照Lowe的测试
