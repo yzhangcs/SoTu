@@ -28,6 +28,12 @@ class BoF(object):
         self.inv = InvFile(self.k, self.n)
 
     def init_app(self, app):
+
+        @click.command('train')
+        # todo
+        def train():
+            self.train()
+
         @click.command('extract')
         def extract():
             self.extract()
@@ -47,18 +53,39 @@ class BoF(object):
             print("mAP of the %d images is %4f, %4fs per query" %
                   (len(queries), mAP, mT))
 
+        app.cli.add_command(train)
         app.cli.add_command(extract)
         app.cli.add_command(evaluate)
+
+    # todo
+    def train(self):
+        print("Get sift features of %d images" % self.n)
 
     def extract(self):
         print("Get sift features of %d images" % self.n)
         # 获取每幅图的所有关键点和对应的描述子
-        keypoints, descriptors = zip(
-            *[self.sift.extract(cv2.imread(self.ukbench[i],
-                                           cv2.IMREAD_GRAYSCALE),
-                                rootsift=True)
-                for i in range(self.n)]
-        )
+        keypoints = []
+        descriptors = []
+        numNoDes = 0
+        badImgs = []
+        for i in range(self.n):
+            print("%d (%d), %s" %((i+1), self.n, self.ukbench[i]))
+            img = cv2.imread(self.ukbench[i], cv2.IMREAD_GRAYSCALE)
+            if img is None:
+                badImgs.append(self.ukbench[i])
+                numNoDes += 1
+                continue
+            status, kpt, des = self.sift.extract(img, rootsift=True)
+            if status == 0:
+                badImgs.append(self.ukbench[i])
+                numNoDes += 1
+                continue
+            keypoints.append(kpt)
+            descriptors.append(des)
+        for badImg in badImgs:
+            self.ukbench.remove(badImg)
+        self.n = self.n - numNoDes
+        self.inv.n = self.n
         for i, (kp, des) in enumerate(zip(keypoints, descriptors)):
             self.sift.dump(kp, des, str(i))
         # keypoints, descriptors = zip(
@@ -108,8 +135,7 @@ class BoF(object):
     def match(self, uri, top_k=20, ht=23, rerank=True):
         kmeans, he, norms, idf = self.bof
         # 计算关键点和描述子
-        kp, des = self.sift.extract(cv2.imread(uri, cv2.IMREAD_GRAYSCALE),
-                                    rootsift=True)
+        status, kp, des = self.sift.extract(cv2.imread(uri, cv2.IMREAD_GRAYSCALE), rootsift=True)
         # 计算每个关键点对应的关于角度和尺度的几何信息
         geo = [(np.radians(k.angle), np.log2(k.size)) for k in kp]
         # 映射所有描述子到距其最近的聚类并得到该聚类的索引
@@ -157,6 +183,7 @@ class BoF(object):
     def bof(self):
         with open(self.bof_path, 'rb') as bof_pkl:
             kmeans, he, norms, idf = pickle.load(bof_pkl)
+        self.n = norms.shape[0]
         return kmeans, he, norms, idf
 
     @cached_property
