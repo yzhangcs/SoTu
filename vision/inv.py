@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 
 
-class InvFile(object):
+class INV(object):
     def __init__(self, k, n):
         self.k = k
         self.n = n

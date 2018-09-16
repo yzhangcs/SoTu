@@ -11,7 +11,7 @@ from sklearn.cluster import MiniBatchKMeans
 from werkzeug.utils import cached_property
 
 from .he import HE
-from .inv import InvFile
+from .inv import INV
 from .sift import SIFT
 from .ukbench import UKBENCH
 from .wgc import WGC
@@ -25,7 +25,7 @@ class BoF(object):
         self.ukbench = UKBENCH('data')
         self.n = len(self.ukbench)
         self.sift = SIFT('data')
-        self.inv = InvFile(self.k, self.n)
+        self.inv = INV(self.k, self.n)
 
     def init_app(self, app):
         @click.command('extract')
@@ -53,12 +53,11 @@ class BoF(object):
     def extract(self):
         print("Get sift features of %d images" % self.n)
         # 获取每幅图的所有关键点和对应的描述子
-        keypoints, descriptors = zip(
-            *[self.sift.extract(cv2.imread(self.ukbench[i],
-                                           cv2.IMREAD_GRAYSCALE),
-                                rootsift=True)
-                for i in range(self.n)]
-        )
+        keypoints, descriptors = zip(*[
+            self.sift.extract(cv2.imread(uri, cv2.IMREAD_GRAYSCALE),
+                              rootsift=True)
+            for uri in self.ukbench
+        ])
         for i, (kp, des) in enumerate(zip(keypoints, descriptors)):
             self.sift.dump(kp, des, str(i))
         # keypoints, descriptors = zip(
@@ -69,8 +68,10 @@ class BoF(object):
 
         print("Start kmeans with %d clusters" % self.k)
         kmeans = MiniBatchKMeans(
-            n_clusters=self.k, batch_size=1000,
-            random_state=0, init_size=self.k * 3
+            n_clusters=self.k,
+            batch_size=1000,
+            random_state=0,
+            init_size=self.k * 3
         ).fit(des_all)
         # 映射每幅图的所有描述子到距其最近的聚类并得到聚类索引
         labels = [kmeans.predict(des) for des in descriptors]
