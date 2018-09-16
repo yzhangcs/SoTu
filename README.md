@@ -31,6 +31,9 @@ $ pip install -r requirements.txt
 # 设置环境变量FLASK_APP的值
 $ export FLASK_APP=sotu.py
 
+# 设置最大线程数
+# $ export OMP_NUM_THREADS=8
+
 # 提取图像特征
 $ flask extract
 ```
