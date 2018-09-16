@@ -4,7 +4,7 @@ import os
 import posixpath
 import re
 
-from utils import download, list_files
+from utils import download, list_files, unzip
 
 
 class UKBENCH(object):
@@ -15,15 +15,18 @@ class UKBENCH(object):
     def __init__(self, root):
         self.root = root
         if not posixpath.exists(posixpath.join(self.root, self.ukbench_dir)):
-            download(self.url, self.root, self.filename, untar=True)
-        self.uris = list_files(posixpath.join(self.root,
-                                              self.ukbench_dir,
-                                              'full'),
-                               ('png', 'jpg', 'jpeg', 'gif'))
-        self.uris.sort()
+            download(self.root, self.filename, self.url)
+            unzip(self.root, self.filename, self.ukbench_dir)
+        self.uris = sorted(list_files(root=posixpath.join(self.root,
+                                                          self.ukbench_dir,
+                                                          'full'),
+                                      suffix=('png', 'jpg', 'jpeg', 'gif')))
 
     def __getitem__(self, index):
         return self.uris[index]
+
+    def __iter__(self):
+        return iter(self.uris)
 
     def __len__(self):
         return len(self.uris)

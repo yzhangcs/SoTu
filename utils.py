@@ -2,12 +2,12 @@
 
 import os
 import posixpath
-import tarfile
+import zipfile
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlretrieve
 
 
-def download(url, root, filename, untar=False):
+def download(root, filename, url):
     fpath = os.path.join(root, filename)
     if not os.path.exists(root):
         os.mkdir(root)
@@ -27,9 +27,12 @@ def download(url, root, filename, untar=False):
             print(e)
             if os.path.exists(fpath):
                 os.remove(fpath)
-    if untar is True:
-        with tarfile.open(fpath) as tar:
-            tar.extractall(os.path.dirname(fpath))
+
+
+def unzip(root, filename, path):
+    fpath = os.path.join(root, filename)
+    with zipfile.ZipFile(fpath, 'r') as zf:
+        zf.extractall(path=os.path.join(root, path))
 
 
 def list_files(root, suffix):
