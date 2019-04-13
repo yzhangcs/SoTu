@@ -1,6 +1,6 @@
 flask == 0.12.4
 flask-wtf == 0.14.2
-jinja2 == 2.10
+jinja2 == 2.10.1
 matplotlib == 3.0.0
 numpy == 1.15.2
 opencv-contrib-python == 3.4.2.17
