@@ -4,7 +4,7 @@ import os
 import posixpath
 import zipfile
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlretrieve
+from urllib.request import urlretrieve
 
 
 def download(root, filename, url):

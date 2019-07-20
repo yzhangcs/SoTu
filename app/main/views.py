@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import posixpath
 
 from flask import (current_app, flash, redirect, render_template, request,
                    send_from_directory, url_for)
