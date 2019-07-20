@@ -28,7 +28,7 @@ $ virtualenv venv
 $ . venv/bin/activate
 $ pip install -r requirements.txt
 
-# 设置环境变量FLASK_APP的值
+# 设置环境变量FLASK_APP和FLASK_ENV的值
 $ export FLASK_APP=sotu.py
 $ export FLASK_ENV=development
 
