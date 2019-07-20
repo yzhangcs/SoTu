@@ -30,6 +30,7 @@ $ pip install -r requirements.txt
 
 # 设置环境变量FLASK_APP的值
 $ export FLASK_APP=sotu.py
+$ export FLASK_ENV=development
 
 # 设置最大线程数
 # $ export OMP_NUM_THREADS=8
@@ -82,10 +83,10 @@ $ flask evaluate
 
 不同方法的评价结果如下表，其中BoF模型设置的聚类数为5000，HE的阈值**ht**为23：
 
-|      methods       |   mAP    |
+| methods            | mAP      |
 | :----------------: | :------: |
-|       *BoF*        | 0.713298 |
-|      *BoF+HE*      | 0.878229 |
+| *BoF*              | 0.713298 |
+| *BoF+HE*           | 0.878229 |
 | *BoF+HE+Reranking* | 0.898573 |
 
 Jégou提到对于ukbench数据集而言，WGC方法的效果较差[^3]，因此评估没有采用WGC方法.
